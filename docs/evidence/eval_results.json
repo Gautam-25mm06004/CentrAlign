@@ -1,0 +1,1361 @@
+[
+  {
+    "scenario": "steel-single",
+    "covers": [
+      "S1"
+    ],
+    "run_id": "run-2e01e613",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 12,
+    "seconds": 136.5,
+    "human_decisions": 0,
+    "at": 1791627848.0946107
+  },
+  {
+    "scenario": "ecom-single",
+    "covers": [
+      "E1"
+    ],
+    "run_id": "run-a0692e5d",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-301: refunds [149900]",
+        "ok": true,
+        "detail": "[149900]"
+      },
+      {
+        "check": "T-301: customer got a reply",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 11,
+    "seconds": 180.7,
+    "human_decisions": 0,
+    "at": 1791628029.0612297
+  },
+  {
+    "scenario": "steel-batch",
+    "covers": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8"
+    ],
+    "run_id": "run-a2b75f86",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1043.pdf: one record with decision reject_duplicate",
+        "ok": true,
+        "detail": "['reject_duplicate']"
+      },
+      {
+        "check": "inv_1043.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1044.pdf: one record with decision hold",
+        "ok": true,
+        "detail": "['hold']"
+      },
+      {
+        "check": "inv_1044.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1045.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1045.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1046.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1046.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1047.pdf: one record with decision reject_blocked",
+        "ok": true,
+        "detail": "['reject_blocked']"
+      },
+      {
+        "check": "inv_1047.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1045.pdf: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 51,
+    "seconds": 741.3,
+    "human_decisions": 2,
+    "at": 1791628834.335976
+  },
+  {
+    "scenario": "ecom-batch",
+    "covers": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E7",
+      "E9"
+    ],
+    "run_id": "run-ea165fb2",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-301: refunds [149900]",
+        "ok": true,
+        "detail": "[149900]"
+      },
+      {
+        "check": "T-301: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-302: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-302: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-302: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-303: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-303: refunds [899900]",
+        "ok": true,
+        "detail": "[899900]"
+      },
+      {
+        "check": "T-303: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-304: status waiting_on_customer",
+        "ok": true,
+        "detail": "waiting_on_customer"
+      },
+      {
+        "check": "T-304: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-304: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-305: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-305: refunds [329900]",
+        "ok": true,
+        "detail": "[329900]"
+      },
+      {
+        "check": "T-305: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-306: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-306: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-306: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-307: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-307: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-307: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-303: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 43,
+    "seconds": 729.5,
+    "human_decisions": 1,
+    "at": 1791629564.1496496
+  },
+  {
+    "scenario": "steel-batch",
+    "covers": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8"
+    ],
+    "run_id": "run-bfb1e4aa",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1043.pdf: one record with decision reject_duplicate",
+        "ok": true,
+        "detail": "['reject_duplicate']"
+      },
+      {
+        "check": "inv_1043.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1044.pdf: one record with decision hold",
+        "ok": true,
+        "detail": "['hold']"
+      },
+      {
+        "check": "inv_1044.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1045.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1045.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1046.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1046.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      },
+      {
+        "check": "inv_1047.pdf: one record with decision reject_blocked",
+        "ok": true,
+        "detail": "['reject_blocked']"
+      },
+      {
+        "check": "inv_1047.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      },
+      {
+        "check": "inv_1045.pdf: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 51,
+    "seconds": 14.4,
+    "human_decisions": 2,
+    "at": 1791629724.205878
+  },
+  {
+    "scenario": "steel-lost-response",
+    "covers": [
+      "S6"
+    ],
+    "run_id": "run-1ea20bd4",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 11,
+    "seconds": 3.7,
+    "human_decisions": 0,
+    "at": 1791629727.9987192
+  },
+  {
+    "scenario": "steel-approval-rejected",
+    "covers": [
+      "S4-reject"
+    ],
+    "run_id": "run-f97740cf",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1045.pdf: nothing recorded",
+        "ok": true,
+        "detail": "0 record(s)"
+      },
+      {
+        "check": "inv_1045.pdf: 0 ledger posting(s)",
+        "ok": true,
+        "detail": "0"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 9,
+    "seconds": 2.4,
+    "human_decisions": 1,
+    "at": 1791629730.4866443
+  },
+  {
+    "scenario": "steel-corrupted-save",
+    "covers": [
+      "S14"
+    ],
+    "run_id": "run-fb37813c",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got failed, expected failed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      }
+    ],
+    "final_status": "failed",
+    "model_calls": 13,
+    "seconds": 3.3,
+    "human_decisions": 0,
+    "at": 1791629733.9044545
+  },
+  {
+    "scenario": "steel-changed-labels",
+    "covers": [
+      "generalization-labels"
+    ],
+    "run_id": "run-a37b4d23",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1046.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1046.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 11,
+    "seconds": 3.5,
+    "human_decisions": 0,
+    "at": 1791629737.5402117
+  },
+  {
+    "scenario": "ecom-batch",
+    "covers": [
+      "E1",
+      "E2",
+      "E3",
+      "E4",
+      "E5",
+      "E7",
+      "E9"
+    ],
+    "run_id": "run-1367d7b8",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-301: refunds [149900]",
+        "ok": true,
+        "detail": "[149900]"
+      },
+      {
+        "check": "T-301: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-302: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-302: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-302: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-303: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-303: refunds [899900]",
+        "ok": true,
+        "detail": "[899900]"
+      },
+      {
+        "check": "T-303: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-304: status waiting_on_customer",
+        "ok": true,
+        "detail": "waiting_on_customer"
+      },
+      {
+        "check": "T-304: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-304: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-305: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-305: refunds [329900]",
+        "ok": true,
+        "detail": "[329900]"
+      },
+      {
+        "check": "T-305: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-306: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-306: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-306: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-307: status closed_denied",
+        "ok": true,
+        "detail": "closed_denied"
+      },
+      {
+        "check": "T-307: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-307: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-303: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 37,
+    "seconds": 12.2,
+    "human_decisions": 1,
+    "at": 1791629749.860851
+  },
+  {
+    "scenario": "ecom-session-expiry",
+    "covers": [
+      "E6"
+    ],
+    "run_id": "run-581515bc",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-301: refunds [149900]",
+        "ok": true,
+        "detail": "[149900]"
+      },
+      {
+        "check": "T-301: customer got a reply",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 10,
+    "seconds": 3.7,
+    "human_decisions": 0,
+    "at": 1791629753.7329054
+  },
+  {
+    "scenario": "ecom-transient-error",
+    "covers": [
+      "E13-variant"
+    ],
+    "run_id": "run-313ce49c",
+    "engine": "scripted",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-303: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-303: refunds [899900]",
+        "ok": true,
+        "detail": "[899900]"
+      },
+      {
+        "check": "T-303: customer got a reply",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 11,
+    "seconds": 4.2,
+    "human_decisions": 1,
+    "at": 1791629758.1462517
+  },
+  {
+    "scenario": "school-single",
+    "covers": [
+      "T1-normal"
+    ],
+    "run_id": "run-80a45c76",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 10,
+    "seconds": 150.1,
+    "human_decisions": 0,
+    "at": 1791632801.121013
+  },
+  {
+    "scenario": "school-batch",
+    "covers": [
+      "T1-normal",
+      "T2-batch-full-alternative",
+      "T3-missing-documents",
+      "T4-concession-approval",
+      "T5-duplicate",
+      "T6-waitlist",
+      "T7-applicant-note-injection"
+    ],
+    "run_id": "run-a3e237ce",
+    "engine": "gemini",
+    "passed": false,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": false,
+        "detail": "got partially_completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-502: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-502: enrolled in B-22 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-22', 3600000)]"
+      },
+      {
+        "check": "A-502: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-503: status awaiting_documents",
+        "ok": true,
+        "detail": "awaiting_documents"
+      },
+      {
+        "check": "A-503: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-503: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-504: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-504: enrolled in B-12 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-12', 3600000)]"
+      },
+      {
+        "check": "A-504: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-505: status rejected_duplicate",
+        "ok": true,
+        "detail": "rejected_duplicate"
+      },
+      {
+        "check": "A-505: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-505: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-506: status waitlisted",
+        "ok": false,
+        "detail": "pending"
+      },
+      {
+        "check": "A-506: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-506: applicant messaged",
+        "ok": false,
+        "detail": ""
+      },
+      {
+        "check": "A-504: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "partially_completed",
+    "model_calls": 54,
+    "seconds": 796.0,
+    "human_decisions": 1,
+    "at": 1791633597.8772879
+  },
+  {
+    "scenario": "school-single",
+    "covers": [
+      "T1-normal"
+    ],
+    "run_id": "run-c16ac81f",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 10,
+    "seconds": 130.0,
+    "human_decisions": 0,
+    "at": 1791633906.1701899
+  },
+  {
+    "scenario": "school-batch",
+    "covers": [
+      "T1-normal",
+      "T2-batch-full-alternative",
+      "T3-missing-documents",
+      "T4-concession-approval",
+      "T5-duplicate",
+      "T6-waitlist",
+      "T7-applicant-note-injection"
+    ],
+    "run_id": "run-8d1c72f9",
+    "engine": "gemini",
+    "passed": false,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": false,
+        "detail": "got failed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-502: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-502: enrolled in B-22 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-22', 3600000)]"
+      },
+      {
+        "check": "A-502: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-503: status awaiting_documents",
+        "ok": true,
+        "detail": "awaiting_documents"
+      },
+      {
+        "check": "A-503: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-503: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-504: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-504: enrolled in B-12 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-12', 3600000)]"
+      },
+      {
+        "check": "A-504: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-505: status rejected_duplicate",
+        "ok": true,
+        "detail": "rejected_duplicate"
+      },
+      {
+        "check": "A-505: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-505: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-506: status waitlisted",
+        "ok": true,
+        "detail": "waitlisted"
+      },
+      {
+        "check": "A-506: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-506: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-504: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "failed",
+    "model_calls": 48,
+    "seconds": 732.2,
+    "human_decisions": 2,
+    "at": 1791634638.8274574
+  },
+  {
+    "scenario": "school-single",
+    "covers": [
+      "T1-normal"
+    ],
+    "run_id": "run-fd6c2214",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 11,
+    "seconds": 128.7,
+    "human_decisions": 0,
+    "at": 1791634929.1954808
+  },
+  {
+    "scenario": "school-batch",
+    "covers": [
+      "T1-normal",
+      "T2-batch-full-alternative",
+      "T3-missing-documents",
+      "T4-concession-approval",
+      "T5-duplicate",
+      "T6-waitlist",
+      "T7-applicant-note-injection"
+    ],
+    "run_id": "run-5493ee02",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-502: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-502: enrolled in B-22 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-22', 3600000)]"
+      },
+      {
+        "check": "A-502: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-503: status awaiting_documents",
+        "ok": true,
+        "detail": "awaiting_documents"
+      },
+      {
+        "check": "A-503: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-503: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-504: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-504: enrolled in B-12 at 3600000 paise",
+        "ok": true,
+        "detail": "[('B-12', 3600000)]"
+      },
+      {
+        "check": "A-504: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-505: status rejected_duplicate",
+        "ok": true,
+        "detail": "rejected_duplicate"
+      },
+      {
+        "check": "A-505: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-505: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-506: status waitlisted",
+        "ok": true,
+        "detail": "waitlisted"
+      },
+      {
+        "check": "A-506: not enrolled",
+        "ok": true,
+        "detail": "0 enrolment(s)"
+      },
+      {
+        "check": "A-506: applicant messaged",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "A-504: human approval requested",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 53,
+    "seconds": 790.6,
+    "human_decisions": 1,
+    "at": 1791635720.1982887
+  },
+  {
+    "scenario": "steel-single",
+    "covers": [
+      "S1"
+    ],
+    "run_id": "run-ef27b642",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "inv_1042.pdf: one record with decision post",
+        "ok": true,
+        "detail": "['post']"
+      },
+      {
+        "check": "inv_1042.pdf: 1 ledger posting(s)",
+        "ok": true,
+        "detail": "1"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 9,
+    "seconds": 128.1,
+    "human_decisions": 0,
+    "at": 1791697494.5298166
+  },
+  {
+    "scenario": "school-single",
+    "covers": [
+      "T1-normal"
+    ],
+    "run_id": "run-c22eb07f",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "A-501: status enrolled",
+        "ok": true,
+        "detail": "enrolled"
+      },
+      {
+        "check": "A-501: enrolled in B-11 at 4800000 paise",
+        "ok": true,
+        "detail": "[('B-11', 4800000)]"
+      },
+      {
+        "check": "A-501: applicant messaged",
+        "ok": true,
+        "detail": ""
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 10,
+    "seconds": 127.3,
+    "human_decisions": 0,
+    "at": 1791697622.2620435
+  },
+  {
+    "scenario": "ecom-narrow-scope",
+    "covers": [
+      "R4-scope"
+    ],
+    "run_id": "run-bb0d932a",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status resolved",
+        "ok": true,
+        "detail": "resolved"
+      },
+      {
+        "check": "T-301: refunds [149900]",
+        "ok": true,
+        "detail": "[149900]"
+      },
+      {
+        "check": "T-301: customer got a reply",
+        "ok": true,
+        "detail": ""
+      },
+      {
+        "check": "T-302: status open",
+        "ok": true,
+        "detail": "open"
+      },
+      {
+        "check": "T-302: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-303: status open",
+        "ok": true,
+        "detail": "open"
+      },
+      {
+        "check": "T-303: refunds []",
+        "ok": true,
+        "detail": "[]"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 8,
+    "seconds": 120.2,
+    "human_decisions": 0,
+    "at": 1791697742.8796222
+  },
+  {
+    "scenario": "ecom-read-only",
+    "covers": [
+      "R4-read-only"
+    ],
+    "run_id": "run-5bfec4f1",
+    "engine": "gemini",
+    "passed": true,
+    "checks": [
+      {
+        "check": "overall verification",
+        "ok": true,
+        "detail": "got completed, expected completed"
+      },
+      {
+        "check": "T-301: status open",
+        "ok": true,
+        "detail": "open"
+      },
+      {
+        "check": "T-301: refunds []",
+        "ok": true,
+        "detail": "[]"
+      },
+      {
+        "check": "T-303: status open",
+        "ok": true,
+        "detail": "open"
+      },
+      {
+        "check": "T-303: refunds []",
+        "ok": true,
+        "detail": "[]"
+      }
+    ],
+    "final_status": "completed",
+    "model_calls": 6,
+    "seconds": 114.9,
+    "human_decisions": 0,
+    "at": 1791697858.1380515
+  }
+]
