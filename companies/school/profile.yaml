@@ -1,0 +1,65 @@
+id: school
+name: Coaching institute (admissions office)
+app: school
+default_task: Process the pending admission applications according to our admissions policy.
+port: 8103
+start_path: /applications
+allowed_paths: ["/", "/applications", "/batches", "/students", "/fees", "/login", "/logout"]
+blocked_path_prefixes: ["/api/", "/__faults"]
+files: null
+login:
+  path: /login
+  username_field: username
+  password_field: password
+protected_routes:
+  - {method: POST, pattern: "^/applications/[^/]+/enrol$", action: school.enrol}
+  - {method: POST, pattern: "^/applications/[^/]+/message$", action: school.message}
+case_kind: admission application ID (e.g. A-501)
+# Versioned action schemas for this company's protected writes
+action_schemas:
+  school.enrol: {application_id: id, batch_id: id, concession_pct: int, fee_payable: money}
+  school.message: {application_id: id, body: text,
+                   new_status: "enum:enrolled,waitlisted,awaiting_documents,rejected_duplicate"}
+actions:
+  enrol:
+    description: Enrol the applicant in a batch of the requested course that has a free seat (the preferred batch if it has seats, otherwise another batch of the same course), with the permitted concession, and send a confirmation message.
+    values:
+      batch_id: batch ID, e.g. B-11
+      concession_pct: concession granted in percent (0 if none)
+      fee_payable: course fee after concession, in rupees
+      message: confirmation message to the applicant
+    writes:
+      - {action: school.enrol, method: POST, route: "/applications/{case_id}/enrol", form: "/applications/{case_id}",
+         fields: {application_id: "{case_id}", batch_id: "{batch_id}", concession_pct: "{concession_pct}", fee_payable: "{fee_payable}"}}
+      - {action: school.message, method: POST, route: "/applications/{case_id}/message", form: "/applications/{case_id}",
+         fields: {application_id: "{case_id}", body: "{message}", new_status: enrolled}}
+  waitlist:
+    description: No batch of the requested course has a free seat; waitlist the applicant and tell them.
+    values:
+      message: message to the applicant
+    writes:
+      - {action: school.message, method: POST, route: "/applications/{case_id}/message", form: "/applications/{case_id}",
+         fields: {application_id: "{case_id}", body: "{message}", new_status: waitlisted}}
+  request_documents:
+    description: Required documents (Class X marksheet and photo ID proof) are missing; ask the applicant for them. Do not enrol.
+    values:
+      message: message listing the missing documents
+    writes:
+      - {action: school.message, method: POST, route: "/applications/{case_id}/message", form: "/applications/{case_id}",
+         fields: {application_id: "{case_id}", body: "{message}", new_status: awaiting_documents}}
+  reject_duplicate:
+    description: The applicant (same phone or email) is already enrolled in this course; reject and tell them.
+    values:
+      message: message to the applicant
+    writes:
+      - {action: school.message, method: POST, route: "/applications/{case_id}/message", form: "/applications/{case_id}",
+         fields: {application_id: "{case_id}", body: "{message}", new_status: rejected_duplicate}}
+compare_values: {batch_id: id, concession_pct: int, fee_payable: money}
+approval_value_facts:
+  concession_pct: {fact: concession_pct, type: int}
+# Message templates used only by the deterministic rules executor after model capacity ends
+fallback_text:
+  enrol: {message: "Dear applicant, application {case_id} is accepted. You are enrolled in batch {batch_id}; fee payable Rs {fee_payable}."}
+  waitlist: {message: "Dear applicant, all batches of your course are currently full. Application {case_id} is on the waitlist and we will contact you when a seat opens."}
+  request_documents: {message: "Dear applicant, please submit both your Class X marksheet and photo ID proof to complete application {case_id}."}
+  reject_duplicate: {message: "Dear applicant, our records show you are already enrolled in this course, so application {case_id} cannot be accepted."}

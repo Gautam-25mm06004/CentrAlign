@@ -1,0 +1,27 @@
+version: school-v1
+# Synthetic admissions policy for the prototype.
+rules:
+  - id: already_enrolled
+    when: {fact: already_enrolled_in_course, op: is_true}
+    effect: hard
+    outcome: reject_duplicate
+    deny_actions: [enrol]
+    message: The applicant is already enrolled in this course (matched by phone or email).
+  - id: documents_missing
+    when: {fact: documents_complete, op: is_false}
+    effect: clarify
+    outcome: request_documents
+    deny_actions: [enrol, waitlist]
+    message: Class X marksheet and photo ID proof are both required before enrolment.
+  - id: course_full
+    when: {fact: seats_left_in_course, op: lt, value: 1}
+    effect: deny
+    outcome: waitlist
+    deny_actions: [enrol]
+    message: No batch of the requested course has a free seat.
+  - id: concession_approval
+    when: {fact: concession_pct, op: gt, value: 10}
+    effect: approval
+    applies_to: [enrol]
+    message: Concessions above 10% need the principal's approval.
+default_outcome: enrol
