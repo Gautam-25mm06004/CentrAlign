@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Fees{% endblock %}{% block body %}
+<h1>Fee schedule &amp; concession rules</h1>
+<table><tr><th>Batch</th><th>Course</th><th>Course fee</th></tr>{% for b in rows %}<tr><td>{{ b.id }}</td><td>{{ b.course }}</td><td>{{ b.fee|inr }}</td></tr>{% endfor %}</table>
+<div class="box" style="margin-top:14px">Fee payable = course fee × (100 − concession %) ÷ 100. Concessions above 10% need the principal's approval; above 50% are not permitted.</div>
+{% endblock %}

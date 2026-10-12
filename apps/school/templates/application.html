@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block title %}{{ a.id }}{% endblock %}{% block body %}
+<h1>Application {{ a.id }} — {{ a.applicant_name }}</h1>
+<div class="box">
+<p><b>Course:</b> {{ a.course }} &nbsp; <b>Preferred batch:</b> {{ a.preferred_batch }} &nbsp; <b>Status:</b> <span class="status">{{ a.status }}</span></p>
+<p><b>Phone:</b> {{ a.phone }} &nbsp; <b>Email:</b> {{ a.email }} &nbsp; <b>Submitted:</b> {{ a.submitted_at|ist }}</p>
+<p><b>Documents received:</b> Class X marksheet: <span class="{{ 'ok' if a.doc_marksheet else 'no' }}">{{ 'received' if a.doc_marksheet else 'missing' }}</span> ·
+Photo ID proof: <span class="{{ 'ok' if a.doc_id_proof else 'no' }}">{{ 'received' if a.doc_id_proof else 'missing' }}</span></p>
+<p><b>Fee concession requested:</b> {{ a.concession_requested_pct }}%{% if a.concession_reason %} — {{ a.concession_reason }}{% endif %}</p>
+<p><b>Applicant's note:</b> {{ a.note }}</p>
+</div>
+{% if enr %}<div class="box"><b>Enrolment:</b> {% for e in enr %}EN-{{ '%05d' % e.id }} in {{ e.batch_name }} ({{ e.batch_id }}), concession {{ e.concession_pct }}%, fee payable {{ e.fee_payable|inr }}{% endfor %}</div>{% endif %}
+{% if msgs %}<h2>Messages sent to the applicant</h2>{% for m in msgs %}<div class="box">{{ m.at|ist }} — status → {{ m.new_status }}<br>{{ m.body }}</div>{% endfor %}{% endif %}
+<h2>Seats available for {{ a.course }}</h2>
+<table><tr><th>Batch</th><th>Name</th><th>Timing</th><th>Seats left</th><th>Course fee</th></tr>
+{% for b in batches if b.course == a.course %}<tr><td>{{ b.id }}</td><td>{{ b.name }}</td><td>{{ b.timing }}</td><td>{{ b.capacity - b.enrolled }} of {{ b.capacity }}</td><td>{{ b.fee|inr }}</td></tr>{% endfor %}</table>
+<h2>Actions</h2>
+<form class="act" method="post" action="/applications/{{ a.id }}/enrol"><h3>Enrol in a batch</h3>
+<input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="application_id" value="{{ a.id }}">
+<label for="en_batch">Batch</label><select id="en_batch" name="batch_id"><option value="">— select —</option>{% for b in batches if b.course == a.course %}<option value="{{ b.id }}">{{ b.id }} · {{ b.name }}</option>{% endfor %}</select>
+<label for="en_con">Concession granted (%)</label><input id="en_con" name="concession_pct" value="0">
+<label for="en_fee">Fee payable (₹)</label><input id="en_fee" name="fee_payable">
+<span></span><div><button type="submit">Enrol student</button></div></form>
+<form class="act" method="post" action="/applications/{{ a.id }}/message"><h3>Message the applicant</h3>
+<input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="application_id" value="{{ a.id }}">
+<label for="ms_body">Message</label><textarea id="ms_body" name="body" rows="4"></textarea>
+<label for="ms_status">Set application status</label><select id="ms_status" name="new_status"><option value="">— select —</option>
+<option value="enrolled">Enrolled</option><option value="waitlisted">Waitlisted</option><option value="awaiting_documents">Awaiting documents</option><option value="rejected_duplicate">Rejected — already enrolled</option></select>
+<span></span><div><button type="submit">Send message</button></div></form>
+{% endblock %}

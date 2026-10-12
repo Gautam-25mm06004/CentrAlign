@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{% block title %}Admissions{% endblock %} | Admissions Office</title>
+<style>
+body{margin:0;font-family:Georgia,"Times New Roman",serif;background:#f7f5ee;color:#24301f;font-size:15px}
+.top{background:#2f4a2a;color:#f3efe0;padding:14px 28px;display:flex;gap:28px;align-items:baseline}
+.top .name{font-size:19px;font-weight:bold}
+.top a{color:#dfe9c8;text-decoration:none;font-family:Arial,sans-serif;font-size:14px}
+.top .who{margin-left:auto;font-family:Arial,sans-serif;font-size:13px}
+.wrap{padding:24px 28px;max-width:1080px}
+h1{font-size:24px;margin:0 0 14px}h2{font-size:18px;margin:22px 0 8px}
+table{border-collapse:collapse;width:100%;background:#fff;font-family:Arial,sans-serif;font-size:14px}
+th,td{border:1px solid #dcd6c3;padding:7px 9px;text-align:left}th{background:#ece6d2}
+.box{background:#fff;border:1px solid #dcd6c3;padding:16px 18px;margin-bottom:14px;font-family:Arial,sans-serif;font-size:14px}
+.ok{color:#2e6b2a;font-weight:bold}.no{color:#a33a22;font-weight:bold}
+form.act{background:#fff;border:1px solid #dcd6c3;padding:14px;display:grid;grid-template-columns:200px 1fr;gap:8px 12px;max-width:640px;font-family:Arial,sans-serif;font-size:14px;margin-bottom:16px}
+form.act h3{grid-column:1/-1;margin:0}
+input,select,textarea{font:inherit;padding:6px;border:1px solid #bfb79c}
+button{background:#2f4a2a;color:#fff;border:0;padding:8px 14px;cursor:pointer;font:inherit}
+.status{padding:1px 8px;border-radius:3px;background:#ece6d2}
+</style></head><body>
+<div class="top"><span class="name">Admissions Office</span>
+<a href="/applications">Pending applications</a><a href="/applications?show=all">All applications</a><a href="/batches">Batches &amp; seats</a><a href="/students">Students</a><a href="/fees">Fee schedule &amp; concessions</a>
+<span class="who">{{ user }} · <a href="/logout">Sign out</a></span></div>
+<div class="wrap">{% block body %}{% endblock %}</div></body></html>

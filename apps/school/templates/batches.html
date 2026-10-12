@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Batches{% endblock %}{% block body %}
+<h1>Batches &amp; seats</h1>
+<table><tr><th>Batch</th><th>Course</th><th>Name</th><th>Timing</th><th>Capacity</th><th>Enrolled</th><th>Seats left</th><th>Fee</th></tr>
+{% for b in rows %}<tr><td>{{ b.id }}</td><td>{{ b.course }}</td><td>{{ b.name }}</td><td>{{ b.timing }}</td><td>{{ b.capacity }}</td><td>{{ b.enrolled }}</td><td>{{ b.capacity - b.enrolled }}</td><td>{{ b.fee|inr }}</td></tr>{% endfor %}</table>{% endblock %}

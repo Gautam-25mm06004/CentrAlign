@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Students{% endblock %}{% block body %}
+<h1>Students</h1>
+<form method="get"><input name="q" value="{{ q }}" aria-label="Search students" placeholder="Name, phone or email"> <button>Search</button></form><br>
+<table><tr><th>Student</th><th>Name</th><th>Phone</th><th>Email</th><th>Enrolled courses</th></tr>
+{% for s in rows %}<tr><td>S-{{ s.id }}</td><td>{{ s.name }}</td><td>{{ s.phone }}</td><td>{{ s.email }}</td><td>{{ s.courses or '—' }}</td></tr>
+{% else %}<tr><td colspan="5">No students found.</td></tr>{% endfor %}</table>{% endblock %}

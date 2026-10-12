@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Applications{% endblock %}{% block body %}
+<h1>{{ 'Pending applications' if show=='pending' else 'All applications' }}</h1>
+<table><tr><th>Application</th><th>Applicant</th><th>Course</th><th>Preferred batch</th><th>Submitted</th><th>Status</th></tr>
+{% for a in rows %}<tr><td><a href="/applications/{{ a.id }}">{{ a.id }}</a></td><td>{{ a.applicant_name }}</td><td>{{ a.course }}</td><td>{{ a.preferred_batch }}</td><td>{{ a.submitted_at|ist }}</td><td><span class="status">{{ a.status }}</span></td></tr>
+{% else %}<tr><td colspan="6">No applications.</td></tr>{% endfor %}</table>{% endblock %}
