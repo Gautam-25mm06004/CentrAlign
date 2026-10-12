@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{% block title %}Accounts{% endblock %} — Steel Trading Accounts</title>
+<style>
+body{font-family:"Segoe UI",Arial,sans-serif;margin:0;background:#eef1f5;color:#1b2430;font-size:14px}
+header{background:#13294b;color:#fff;display:flex;align-items:center;gap:24px;padding:0 24px;height:52px}
+header .brand{font-weight:700;letter-spacing:.3px}
+header nav a{color:#c9d6ea;text-decoration:none;margin-right:18px}
+header nav a:hover{color:#fff}
+header .user{margin-left:auto;font-size:13px;color:#9fb3d1}
+header .user a{color:#9fb3d1}
+main{padding:24px;max-width:1150px}
+h1{font-size:20px;margin:0 0 16px}
+table{border-collapse:collapse;width:100%;background:#fff;box-shadow:0 1px 2px #0001}
+th,td{border-bottom:1px solid #e3e7ee;padding:8px 10px;text-align:left}
+th{background:#f6f8fb;font-weight:600;font-size:13px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.badge{padding:2px 8px;border-radius:10px;font-size:12px}
+.active,.post{background:#dcfce7;color:#166534}.blocked,.reject_blocked,.reject_duplicate{background:#fee2e2;color:#991b1b}
+.hold{background:#fef3c7;color:#92400e}.open{background:#e0ecff;color:#1e40af}
+form.search{margin-bottom:12px}form.search input{padding:6px 8px;width:260px}
+.card{background:#fff;padding:20px;box-shadow:0 1px 2px #0001;border-radius:4px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.form-grid{display:grid;grid-template-columns:220px 1fr;gap:10px 16px;align-items:center;max-width:720px}
+.form-grid input,.form-grid select,.form-grid textarea{padding:7px;border:1px solid #c5ccd8;border-radius:3px;font:inherit}
+button{background:#13294b;color:#fff;border:0;padding:9px 18px;border-radius:3px;font:inherit;cursor:pointer}
+</style></head><body>
+<header><span class="brand">Steel Trading — Accounts</span>
+<nav><a href="/">Home</a><a href="/vendors">Vendors</a><a href="/purchase-orders">Purchase orders</a>
+<a href="/invoices/new">Record supplier invoice</a><a href="/invoices">Processed invoices</a><a href="/ledger">Ledger</a></nav>
+<span class="user">{{ user }} · <a href="/logout">Sign out</a></span></header>
+<main>{% block body %}{% endblock %}</main></body></html>

@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Vendors{% endblock %}{% block body %}
+<h1>Vendors</h1>
+<form class="search" method="get"><input name="q" value="{{ q }}" aria-label="Search vendors" placeholder="Search by name, GSTIN or ID"> <button>Search</button></form>
+<table><thead><tr><th>Vendor ID</th><th>Name</th><th>GSTIN</th><th>Status</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r.id }}</td><td>{{ r.name }}</td><td>{{ r.gstin }}</td><td><span class="badge {{ r.status }}">{{ r.status }}</span></td></tr>
+{% else %}<tr><td colspan="4">No vendors found.</td></tr>{% endfor %}</tbody></table>{% endblock %}

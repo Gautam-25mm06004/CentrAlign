@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Processed invoices{% endblock %}{% block body %}
+<h1>Processed supplier invoices</h1>
+<form class="search" method="get"><input name="q" value="{{ q }}" aria-label="Search processed invoices" placeholder="Search by invoice number or vendor"> <button>Search</button></form>
+<table><thead><tr><th>Ref</th><th>Supplier invoice no.</th><th>Vendor</th><th>PO</th><th class="num">Total</th><th>Decision</th><th>Reason</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>PI-{{ '%05d' % r.id }}</td><td>{{ r.invoice_no }}</td><td>{{ r.vendor_name }} ({{ r.vendor_id }})</td><td>{{ r.po_no }}</td><td class="num">{{ r.total|inr }}</td><td><span class="badge {{ r.decision }}">{{ r.decision }}</span></td><td>{{ r.reason }}</td></tr>
+{% else %}<tr><td colspan="7">No processed invoices match.</td></tr>{% endfor %}</tbody></table>{% endblock %}

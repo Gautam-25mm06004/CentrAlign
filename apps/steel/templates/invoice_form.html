@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% block title %}Record supplier invoice{% endblock %}{% block body %}
+<h1>Record supplier invoice</h1>
+<div class="card">
+<form method="post" action="/invoices" class="form-grid">
+<input type="hidden" name="csrf_token" value="{{ csrf }}">
+<label for="source_doc">Source document file name</label><input id="source_doc" name="source_doc">
+<label for="vendor_id">Vendor</label><select id="vendor_id" name="vendor_id"><option value="">— select vendor —</option>
+{% for v in vendors %}<option value="{{ v.id }}">{{ v.name }} · {{ v.gstin }} ({{ v.id }})</option>{% endfor %}</select>
+<label for="invoice_no">{{ labels.invoice_no }}</label><input id="invoice_no" name="invoice_no">
+<label for="po_no">{{ labels.po_no }}</label><select id="po_no" name="po_no"><option value="">— select PO —</option>
+{% for p in pos %}<option value="{{ p.id }}">{{ p.id }} · {{ p.vendor_id }} · {{ p.grade }}</option>{% endfor %}</select>
+<label for="grade">Grade / item</label><input id="grade" name="grade">
+<label for="quantity_t">{{ labels.quantity_t }}</label><input id="quantity_t" name="quantity_t">
+<label for="rate">{{ labels.rate }}</label><input id="rate" name="rate">
+<label for="subtotal">Taxable value (₹)</label><input id="subtotal" name="subtotal">
+<label for="tax">GST amount (₹)</label><input id="tax" name="tax">
+<label for="total">{{ labels.total }}</label><input id="total" name="total">
+<label for="decision">{{ labels.decision }}</label><select id="decision" name="decision">
+<option value="">— select —</option><option value="post">Post to ledger</option><option value="hold">Hold for review</option>
+<option value="reject_duplicate">Reject — duplicate</option><option value="reject_blocked">Reject — vendor blocked</option></select>
+<label for="reason">Reason / notes</label><textarea id="reason" name="reason" rows="3"></textarea>
+<span></span><div><button type="submit">Save invoice</button></div>
+</form></div>{% endblock %}

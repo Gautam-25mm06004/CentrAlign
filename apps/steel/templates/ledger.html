@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Ledger{% endblock %}{% block body %}
+<h1>Ledger postings</h1>
+<table><thead><tr><th>Posting ref</th><th>Supplier invoice no.</th><th>Vendor ID</th><th class="num">Amount</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r.posting_ref }}</td><td>{{ r.invoice_no }}</td><td>{{ r.vendor_id }}</td><td class="num">{{ r.amount|inr }}</td></tr>
+{% else %}<tr><td colspan="4">No postings.</td></tr>{% endfor %}</tbody></table>{% endblock %}

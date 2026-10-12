@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block title %}Purchase orders{% endblock %}{% block body %}
+<h1>Purchase orders</h1>
+<form class="search" method="get"><input name="q" value="{{ q }}" aria-label="Search purchase orders" placeholder="Search by PO number or vendor"> <button>Search</button></form>
+<table><thead><tr><th>PO number</th><th>Vendor</th><th>Vendor ID</th><th>Grade / item</th><th class="num">Ordered (MT)</th><th class="num">Rate per MT</th><th>Status</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r.id }}</td><td>{{ r.vendor_name }}</td><td>{{ r.vendor_id }}</td><td>{{ r.grade }}</td><td class="num">{{ r.tonnes }}</td><td class="num">{{ r.rate|inr }}</td><td><span class="badge {{ r.status }}">{{ r.status }}</span></td></tr>
+{% else %}<tr><td colspan="7">No purchase orders found.</td></tr>{% endfor %}</tbody></table>{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Home{% endblock %}{% block body %}
+<h1>Accounts payable overview</h1>
+<div class="grid">
+<div class="card"><div>Open purchase orders</div><h2>{{ stats.open_pos }}</h2></div>
+<div class="card"><div>Processed supplier invoices</div><h2>{{ stats.processed }}</h2></div>
+<div class="card"><div>Ledger postings total</div><h2>{{ stats.ledger|inr }}</h2></div>
+</div>
+<p style="margin-top:20px">Supplier invoices arrive as PDF files in the accounts inbox folder. Record each one using
+<a href="/invoices/new">Record supplier invoice</a>.</p>
+{% endblock %}
