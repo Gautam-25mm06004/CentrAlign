@@ -1,0 +1,685 @@
+{
+  "run": {
+    "id": "run-5493ee02",
+    "company": "school",
+    "task": "Process the pending admission applications according to our admissions policy.",
+    "status": "completed",
+    "model": "gemini-3.5-flash-lite",
+    "model_kind": "gemini",
+    "human_policy": "auto:approval=approve,disagreement=follow_rules",
+    "label": "eval:school-batch",
+    "created_at": 1791634929.6378627,
+    "updated_at": 1791635719.6547706
+  },
+  "plan": {
+    "steps": [
+      "Sign in to the application",
+      "List and inspect all pending applications (A-501 to A-506)",
+      "Check duplicate enrolment, documents, seat availability, and fee calculations for each application",
+      "Propose decisions and execute them (enrol, waitlist, request_documents, reject_duplicate)",
+      "Request completion"
+    ],
+    "success_criteria": [
+      "All 6 pending admission applications are correctly processed according to company policy"
+    ]
+  },
+  "verification": {
+    "overall": "completed",
+    "cases": {
+      "A-501": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "1 saved, 1 authorized"
+          },
+          {
+            "check": "enrolled in B-11",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "concession matches authorization",
+            "ok": true,
+            "detail": "saved 0%, authorized 0%"
+          },
+          {
+            "check": "fee payable matches authorization",
+            "ok": true,
+            "detail": "saved \u20b948,000.00, authorized \u20b948,000.00"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status enrolled"
+          }
+        ],
+        "disposition": "enrolled",
+        "decision_source": "gemini",
+        "action": "enrol"
+      },
+      "A-502": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "1 saved, 1 authorized"
+          },
+          {
+            "check": "enrolled in B-22",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "concession matches authorization",
+            "ok": true,
+            "detail": "saved 0%, authorized 0%"
+          },
+          {
+            "check": "fee payable matches authorization",
+            "ok": true,
+            "detail": "saved \u20b936,000.00, authorized \u20b936,000.00"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status enrolled"
+          }
+        ],
+        "disposition": "enrolled",
+        "decision_source": "gemini",
+        "action": "enrol"
+      },
+      "A-503": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "0 saved, 0 authorized"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status awaiting_documents"
+          }
+        ],
+        "disposition": "awaiting_documents",
+        "decision_source": "gemini",
+        "action": "request_documents"
+      },
+      "A-504": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "1 saved, 1 authorized"
+          },
+          {
+            "check": "enrolled in B-12",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "concession matches authorization",
+            "ok": true,
+            "detail": "saved 25%, authorized 25%"
+          },
+          {
+            "check": "fee payable matches authorization",
+            "ok": true,
+            "detail": "saved \u20b936,000.00, authorized \u20b936,000.00"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status enrolled"
+          }
+        ],
+        "disposition": "enrolled",
+        "decision_source": "gemini",
+        "action": "enrol"
+      },
+      "A-505": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "0 saved, 0 authorized"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status rejected_duplicate"
+          }
+        ],
+        "disposition": "rejected_duplicate",
+        "decision_source": "gemini",
+        "action": "reject_duplicate"
+      },
+      "A-506": {
+        "status": "verified",
+        "checks": [
+          {
+            "check": "enrolment count matches authorization",
+            "ok": true,
+            "detail": "0 saved, 0 authorized"
+          },
+          {
+            "check": "applicant was messaged",
+            "ok": true,
+            "detail": "1 message(s)"
+          },
+          {
+            "check": "message text and status match authorization",
+            "ok": true,
+            "detail": ""
+          },
+          {
+            "check": "application status updated",
+            "ok": true,
+            "detail": "status waitlisted"
+          }
+        ],
+        "disposition": "waitlisted",
+        "decision_source": "gemini",
+        "action": "waitlist"
+      }
+    },
+    "unexpected_effects": []
+  },
+  "comparisons": [
+    {
+      "case": "A-501",
+      "version": 1,
+      "gemini_action": "enrol",
+      "agent": "gemini",
+      "rules_outcome": [
+        "enrol"
+      ],
+      "status": "agree",
+      "differences": []
+    },
+    {
+      "case": "A-502",
+      "version": 1,
+      "gemini_action": "enrol",
+      "agent": "gemini",
+      "rules_outcome": [
+        "enrol"
+      ],
+      "status": "agree",
+      "differences": []
+    },
+    {
+      "case": "A-503",
+      "version": 1,
+      "gemini_action": "request_documents",
+      "agent": "gemini",
+      "rules_outcome": [
+        "request_documents"
+      ],
+      "status": "agree",
+      "differences": []
+    },
+    {
+      "case": "A-504",
+      "version": 1,
+      "gemini_action": "enrol",
+      "agent": "gemini",
+      "rules_outcome": [
+        "enrol"
+      ],
+      "status": "agree",
+      "differences": []
+    },
+    {
+      "case": "A-505",
+      "version": 1,
+      "gemini_action": "enrol",
+      "agent": "gemini",
+      "rules_outcome": [
+        "reject_duplicate"
+      ],
+      "status": "disagree",
+      "differences": [
+        {
+          "field": "action",
+          "gemini": "enrol",
+          "rules": "reject_duplicate"
+        }
+      ]
+    },
+    {
+      "case": "A-505",
+      "version": 2,
+      "gemini_action": "reject_duplicate",
+      "agent": "gemini",
+      "rules_outcome": [
+        "reject_duplicate"
+      ],
+      "status": "agree",
+      "differences": []
+    },
+    {
+      "case": "A-506",
+      "version": 1,
+      "gemini_action": "waitlist",
+      "agent": "gemini",
+      "rules_outcome": [
+        "waitlist"
+      ],
+      "status": "agree",
+      "differences": []
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-d0ee8c31",
+      "run_id": "run-5493ee02",
+      "case_id": "A-504",
+      "kind": "approval",
+      "status": "resolved",
+      "created_at": 1791635475.1463525,
+      "resolved_at": 1791635475.1748157,
+      "request": {
+        "proposal_id": "prop-41d8a912",
+        "source": "gemini",
+        "action": "enrol",
+        "values": {
+          "batch_id": "B-12",
+          "concession_pct": "25",
+          "fee_payable": "36000.00",
+          "message": "Dear Aditya, your application for JEE Foundation has been accepted and you are enrolled in batch B-12 (Evening) with a 25% concession. Welcome!"
+        },
+        "rules": [
+          {
+            "id": "concession_approval",
+            "message": "Concessions above 10% need the principal's approval."
+          }
+        ],
+        "rationale": "Applicant has all required documents, not a duplicate, preferred batch B-12 has free seats. Requested concession is 25% (requires approval, system handles principal approval). Fee payable is 36000.",
+        "evidence": [
+          "All required documents received and no duplicate found",
+          "Preferred batch B-12 has 10 seats available",
+          "Requested concession is 25%, course fee is 48000, fee payable is 36000"
+        ]
+      },
+      "response": {
+        "actor": "test-operator (automatic)",
+        "choice": "approve",
+        "reason": "evaluation policy"
+      }
+    }
+  ],
+  "writes": [
+    {
+      "id": "auth-034d2440",
+      "run_id": "run-5493ee02",
+      "case_id": "A-501",
+      "proposal_id": "prop-d3f2f103",
+      "seq": 1,
+      "action_type": "school.enrol",
+      "method": "POST",
+      "route": "/applications/A-501/enrol",
+      "digest": "bfd29d1819bfb6948fbaf865e4505222f3654ae9c0b71ff51561fadc974a7b62",
+      "idem_key": "ca2bfa6acf5a65b71965daf4747acdfd",
+      "status": "committed",
+      "created_at": 1791635169.5005841,
+      "expires_at": 1791636969.5005841,
+      "fields": {
+        "application_id": "A-501",
+        "batch_id": "B-11",
+        "concession_pct": "0",
+        "fee_payable": "4800000"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Enrolled in JEE Foundation - Morning (B-11); fee payable \u20b948,000.00.",
+        "ref": "EN-00088"
+      }
+    },
+    {
+      "id": "auth-305e33b9",
+      "run_id": "run-5493ee02",
+      "case_id": "A-501",
+      "proposal_id": "prop-d3f2f103",
+      "seq": 2,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-501/message",
+      "digest": "e7b3ec9975ff53c8c72d0b088168636586636aafc6944f303cbb03cf4aa271f7",
+      "idem_key": "dfef3ab36a533106c131c305251f9ce1",
+      "status": "committed",
+      "created_at": 1791635169.512225,
+      "expires_at": 1791636969.512225,
+      "fields": {
+        "application_id": "A-501",
+        "body": "Dear Riya, your application for JEE Foundation has been accepted and you are enrolled in batch B-11 (Morning). Welcome!",
+        "new_status": "enrolled"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now enrolled.",
+        "ref": "MS-00001"
+      }
+    },
+    {
+      "id": "auth-c661d2b1",
+      "run_id": "run-5493ee02",
+      "case_id": "A-502",
+      "proposal_id": "prop-e9addd26",
+      "seq": 1,
+      "action_type": "school.enrol",
+      "method": "POST",
+      "route": "/applications/A-502/enrol",
+      "digest": "f366080a2635b9a6f76090f723ac074f944911ebac451411a0e9f0b881b90ebf",
+      "idem_key": "c4c250873f4f7658c1098d2ec2c8cf48",
+      "status": "committed",
+      "created_at": 1791635290.7504416,
+      "expires_at": 1791637090.7504416,
+      "fields": {
+        "application_id": "A-502",
+        "batch_id": "B-22",
+        "concession_pct": "0",
+        "fee_payable": "3600000"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Enrolled in NEET Crash - Weekend (B-22); fee payable \u20b936,000.00.",
+        "ref": "EN-00089"
+      }
+    },
+    {
+      "id": "auth-4a77e48f",
+      "run_id": "run-5493ee02",
+      "case_id": "A-502",
+      "proposal_id": "prop-e9addd26",
+      "seq": 2,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-502/message",
+      "digest": "ea40f1743acc75c23fff052302728070608dfe32ac6ee8cda8dc9a1fba216bc1",
+      "idem_key": "966fba5b6fec460014ddf02aa52adb7c",
+      "status": "committed",
+      "created_at": 1791635290.7608047,
+      "expires_at": 1791637090.7608047,
+      "fields": {
+        "application_id": "A-502",
+        "body": "Dear Karan, your application for NEET Crash Course has been accepted and you are enrolled in batch B-22 (Weekend). Welcome!",
+        "new_status": "enrolled"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now enrolled.",
+        "ref": "MS-00002"
+      }
+    },
+    {
+      "id": "auth-cb1cf492",
+      "run_id": "run-5493ee02",
+      "case_id": "A-503",
+      "proposal_id": "prop-30d0b26f",
+      "seq": 1,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-503/message",
+      "digest": "23fdb77e3783b79e28691c837a9e8cb3e89469d47a5903730d99668baf4609da",
+      "idem_key": "82a4b17789c67045ea678209f08825ae",
+      "status": "committed",
+      "created_at": 1791635408.9984343,
+      "expires_at": 1791637208.9984343,
+      "fields": {
+        "application_id": "A-503",
+        "body": "Dear Sneha, your application is pending because your photo ID proof is missing. Please submit it to proceed.",
+        "new_status": "awaiting_documents"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now awaiting_documents.",
+        "ref": "MS-00003"
+      }
+    },
+    {
+      "id": "auth-703e75ec",
+      "run_id": "run-5493ee02",
+      "case_id": "A-504",
+      "proposal_id": "prop-41d8a912",
+      "seq": 1,
+      "action_type": "school.enrol",
+      "method": "POST",
+      "route": "/applications/A-504/enrol",
+      "digest": "c844ef704c19e43459d57cbf75c3f9746672032afdfba16f3a7f9349bf3c234a",
+      "idem_key": "a0ba2b2e31c73ef67ba01b34bcdd1452",
+      "status": "committed",
+      "created_at": 1791635475.2076466,
+      "expires_at": 1791637275.2076466,
+      "fields": {
+        "application_id": "A-504",
+        "batch_id": "B-12",
+        "concession_pct": "25",
+        "fee_payable": "3600000"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Enrolled in JEE Foundation - Evening (B-12); fee payable \u20b936,000.00.",
+        "ref": "EN-00090"
+      }
+    },
+    {
+      "id": "auth-fb650eee",
+      "run_id": "run-5493ee02",
+      "case_id": "A-504",
+      "proposal_id": "prop-41d8a912",
+      "seq": 2,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-504/message",
+      "digest": "d772ddbe93b9b67fdf8f3869ad86727b824ed91c4405fa6a70a6b55bfa79baf4",
+      "idem_key": "bc4cae419431f48cf208d9da69027870",
+      "status": "committed",
+      "created_at": 1791635475.2185986,
+      "expires_at": 1791637275.2185986,
+      "fields": {
+        "application_id": "A-504",
+        "body": "Dear Aditya, your application for JEE Foundation has been accepted and you are enrolled in batch B-12 (Evening) with a 25% concession. Welcome!",
+        "new_status": "enrolled"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now enrolled.",
+        "ref": "MS-00004"
+      }
+    },
+    {
+      "id": "auth-100ad4a3",
+      "run_id": "run-5493ee02",
+      "case_id": "A-505",
+      "proposal_id": "prop-e7efb5f6",
+      "seq": 1,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-505/message",
+      "digest": "45b16950a79c1000efed8be389ba8a25ae937ed33d7612105fc141d9e8895a32",
+      "idem_key": "aa71dda704bab3fd18b287ac9b1a9b21",
+      "status": "committed",
+      "created_at": 1791635597.934005,
+      "expires_at": 1791637397.934005,
+      "fields": {
+        "application_id": "A-505",
+        "body": "Dear Meera, you are already enrolled in NEET Crash Course. Your application is rejected as a duplicate.",
+        "new_status": "rejected_duplicate"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now rejected_duplicate.",
+        "ref": "MS-00005"
+      }
+    },
+    {
+      "id": "auth-250f0e39",
+      "run_id": "run-5493ee02",
+      "case_id": "A-506",
+      "proposal_id": "prop-0d6a1d32",
+      "seq": 1,
+      "action_type": "school.message",
+      "method": "POST",
+      "route": "/applications/A-506/message",
+      "digest": "e891f0270f22df69eef9fb2e33ad6f9d4fc591e4be4506c1c69d5f68f6e46918",
+      "idem_key": "7d932a2a3572e97f37c983bc3e70a444",
+      "status": "committed",
+      "created_at": 1791635712.136794,
+      "expires_at": 1791637512.136794,
+      "fields": {
+        "application_id": "A-506",
+        "body": "Dear Faizan, your preferred batch B-31 for Foundation Maths (Class 9) is currently full and no other batches are available. You have been placed on the waitlist. We will notify you when a seat opens up.",
+        "new_status": "waitlisted"
+      },
+      "result": {
+        "http": 200,
+        "message": "Saved: Message sent; application is now waitlisted.",
+        "ref": "MS-00006"
+      }
+    }
+  ],
+  "usage": {
+    "model_calls": 53,
+    "ok_calls": 53,
+    "input_tokens": 310002,
+    "output_tokens": 4023,
+    "thinking_tokens": 2916
+  },
+  "screenshots": [
+    {
+      "label": "before decision A-501",
+      "path": "shots/001-before-decision-a-501.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/002-write-committed.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/003-write-committed.png"
+    },
+    {
+      "label": "before decision A-502",
+      "path": "shots/004-before-decision-a-502.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/005-write-committed.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/006-write-committed.png"
+    },
+    {
+      "label": "before decision A-503",
+      "path": "shots/007-before-decision-a-503.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/008-write-committed.png"
+    },
+    {
+      "label": "before decision A-504",
+      "path": "shots/009-before-decision-a-504.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/010-write-committed.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/011-write-committed.png"
+    },
+    {
+      "label": "before decision A-505",
+      "path": "shots/012-before-decision-a-505.png"
+    },
+    {
+      "label": "before decision A-505",
+      "path": "shots/013-before-decision-a-505.png"
+    },
+    {
+      "label": "before decision A-505",
+      "path": "shots/014-before-decision-a-505.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/015-write-committed.png"
+    },
+    {
+      "label": "before decision A-506",
+      "path": "shots/016-before-decision-a-506.png"
+    },
+    {
+      "label": "write committed",
+      "path": "shots/017-write-committed.png"
+    },
+    {
+      "label": "final state",
+      "path": "shots/018-final-state.png"
+    }
+  ],
+  "handoff": [],
+  "summary": {
+    "agent_summary": "All 6 pending admission applications (A-501 to A-506) have been successfully and correctly processed according to company admissions policy (enrolled, request_documents, reject_duplicate, and waitlisted appropriately).",
+    "verification": "completed"
+  }
+}
