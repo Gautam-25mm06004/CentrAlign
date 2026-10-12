@@ -1,0 +1,32 @@
+{
+  "frozen_at": "2026-10-10 11:32:18",
+  "description": "Baseline v1: shared runtime after steel + e-commerce passed offline (8/8) and live Gemini (4/4).",
+  "files": {
+    "operator_core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operator_core/authz.py": "84e904f17f5599ba7ff96a9e2bc3abd43a4aca8e63098a590739fc42095ad416",
+    "operator_core/browser.py": "a6d46fd846c00d7ad03cae838d1b061854bc77da4e5ff2268cc3b66b881b3f36",
+    "operator_core/checker.py": "28569d898be9d4f624b13521e40314454de4cd52dcacf44496fc5f062188dc52",
+    "operator_core/company.py": "7997e9f711afef122008191909cab545c42faa7accfec4206a7ee90dae2144de",
+    "operator_core/context.py": "083f2c9a114d1fb78d1e361a319c1005e06844c823c25e65ae463a344563cd77",
+    "operator_core/llm.py": "852724116ac0d1fe76b511b7f2e05f0ba18d84e1151d6cabfb68dff61d05beb1",
+    "operator_core/report.py": "f7765620efe23e3b4a44e2edd04115eeb89766961dbe80e3b0048c37d006f591",
+    "operator_core/runner.py": "8df869c0bc68b1fe8385f914e9f9ba546a25cc4494a39281d18785b963fa26f0",
+    "operator_core/store.py": "533afdbb73f5ab897a2284c0bc6a59e2858f364d1fafff1fa7baef7d7248d02b",
+    "operator_core/tools.py": "734879dbc4cb89fb2607ba085113c1344fcf0a1b5f540c052c56d5b28124bd7c",
+    "operator_core/trusted.py": "0a4543b41b14a042da6400209bdaf50097e6edc89583422955b476d0f2fb499e",
+    "operator_core/verifier.py": "9babed19f806fab86d0e2e335ca6f92da913774da99d1519ba5a519815c5bbb1",
+    "shared/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "shared/actions.py": "1f7cb903b5c456384955f7c61f2905b2d16204870f17d9f0541dacd8e3d06f3c",
+    "shared/capability.py": "cb3939c9a95c6174d1b063580040b8cd93c5ab2423c9428629cdf41b09c1e6ca",
+    "shared/config.py": "e41f37b8e0fcf604f20a7e5c4c419dc7ff92cd8374c573e5359b77e54e2671da",
+    "console/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "console/server.py": "fd0ec4836415960b2ea260afc6441074b3044a1dd75c095dbe4d12b0977d4863",
+    "console/static/app.js": "77940691cae8d165eb17648b24ad6c4f77fd84b4bc4f447be183af9900815660",
+    "console/static/index.html": "565132fb3f06c413c785fdbd949fcbf4a503a9974a3cfd344aa275b7ce1e0e1e",
+    "console/static/styles.css": "65025a405b31b07849679004e5d701ff8c7a78223a4995b328d751bc50e3380a",
+    "apps/common.py": "2fcc0a5121503d06d9ae6d1812ebb74ff36482b93f911b8dc3f9adc64a25b24d",
+    "evaluation/run_eval.py": "b5347fc6d3b560d8f22e9a2633acfed491fe8ed843ed2b71d5305e06216bb0aa",
+    "start.py": "db4468ce3d3a8d8caa88c66ff9a9d4ca0cfa3f1bdf20a1027b67d472ba57b371",
+    "scripts/run.py": "ebac1788144534c2bc3e50ea0d6cef09b938331422922b733bfdc1be8146bb5e"
+  }
+}
