@@ -1,0 +1,68 @@
+id: ecommerce
+name: E-commerce store (customer support)
+app: ecommerce
+port: 8102
+default_task: Resolve the open return and replacement tickets using our store policy.
+action_schemas:
+  ecom.refund: {ticket_id: id, order_line_id: id, amount: money}
+  ecom.replace: {ticket_id: id, order_line_id: id, quantity: int}
+  ecom.reply: {ticket_id: id, body: text, new_status: "enum:resolved,waiting_on_customer,escalated,closed_denied"}
+start_path: /tickets
+allowed_paths: ["/", "/tickets", "/customers", "/orders", "/products", "/login", "/logout"]
+blocked_path_prefixes: ["/api/", "/__faults"]
+files: null
+login:
+  path: /login
+  username_field: username
+  password_field: password
+protected_routes:
+  - {method: POST, pattern: "^/tickets/[^/]+/refund$", action: ecom.refund}
+  - {method: POST, pattern: "^/tickets/[^/]+/replacement$", action: ecom.replace}
+  - {method: POST, pattern: "^/tickets/[^/]+/reply$", action: ecom.reply}
+case_kind: support ticket ID (e.g. T-301)
+actions:
+  refund:
+    description: Refund an eligible order line and reply to the customer (ticket becomes resolved).
+    values:
+      order_line_id: order line ID, e.g. L-1
+      amount: refund amount in rupees
+      reply_text: message to the customer
+    writes:
+      - {action: ecom.refund, method: POST, route: "/tickets/{case_id}/refund", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", order_line_id: "{order_line_id}", amount: "{amount}"}}
+      - {action: ecom.reply, method: POST, route: "/tickets/{case_id}/reply", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", body: "{reply_text}", new_status: resolved}}
+  replace:
+    description: Send a replacement for an eligible order line (stock must be available) and reply.
+    values:
+      order_line_id: order line ID
+      quantity: units to replace
+      reply_text: message to the customer
+    writes:
+      - {action: ecom.replace, method: POST, route: "/tickets/{case_id}/replacement", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", order_line_id: "{order_line_id}", quantity: "{quantity}"}}
+      - {action: ecom.reply, method: POST, route: "/tickets/{case_id}/reply", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", body: "{reply_text}", new_status: resolved}}
+  deny:
+    description: Decline the request under store policy and reply explaining why (ticket closed as denied).
+    values:
+      order_line_id: order line ID the request concerns
+      reply_text: message to the customer
+    writes:
+      - {action: ecom.reply, method: POST, route: "/tickets/{case_id}/reply", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", body: "{reply_text}", new_status: closed_denied}}
+  clarify:
+    description: Ask the customer for missing information (ticket waits on the customer). No money moves.
+    values:
+      reply_text: question to the customer
+    writes:
+      - {action: ecom.reply, method: POST, route: "/tickets/{case_id}/reply", form: "/tickets/{case_id}",
+         fields: {ticket_id: "{case_id}", body: "{reply_text}", new_status: waiting_on_customer}}
+compare_values: {order_line_id: id, amount: money, quantity: int}
+approval_value_facts: {amount: refund_amount_paise}
+# Message templates used only by the deterministic rules executor after model capacity ends
+fallback_text:
+  refund: {reply_text: "Hello, we have refunded Rs {amount} for order line {order_line_id} under our return policy. Ticket {case_id} is now resolved."}
+  replace: {reply_text: "Hello, a replacement for order line {order_line_id} is on its way. Ticket {case_id} is now resolved."}
+  deny: {reply_text: "Hello, we are sorry, but this request cannot be accepted under our store return policy (ticket {case_id})."}
+  clarify: {reply_text: "Hello, could you tell us the order number this request is about, so we can help with ticket {case_id}?"}

@@ -1,0 +1,46 @@
+version: ecommerce-v1
+# Synthetic prototype store policy (not consumer-law guidance).
+rules:
+  - id: order_identity
+    when: {fact: order_identified, op: is_false}
+    effect: clarify
+    outcome: clarify
+    deny_actions: [refund, replace, deny]
+    message: The ticket does not identify a single order line; ask the customer before acting.
+  - id: request_before_delivery
+    when: {fact: days_since_delivery, op: lt, value: 0}
+    effect: clarify
+    outcome: clarify
+    deny_actions: [refund, replace, deny]
+    message: The request is dated before the recorded delivery; the dates must be clarified before acting.
+  - id: non_returnable_category
+    when: {fact: category_returnable, op: is_false}
+    effect: deny
+    outcome: deny
+    deny_actions: [refund, replace]
+    message: This product category is non-returnable.
+  - id: return_window
+    when: {fact: days_since_delivery, op: gt, value: 7}
+    effect: deny
+    outcome: deny
+    deny_actions: [refund, replace]
+    message: Return requested more than 7 days after delivery.
+  - id: nothing_left_to_refund
+    when: {fact: refundable_remaining_paise, op: lte, value: 0}
+    effect: deny
+    outcome: deny
+    deny_actions: [refund]
+    message: The order line has already been fully refunded.
+  - id: replacement_out_of_stock
+    when: {all: [{fact: requested_remedy, op: eq, value: replacement}, {fact: stock_available, op: lt, value: 1}]}
+    effect: substitute
+    outcome: refund
+    deny_actions: [replace]
+    message: Replacement stock is unavailable; refund the line instead.
+  - id: refund_approval
+    when: {fact: refund_amount_paise, op: gt, value: 500000}
+    effect: approval
+    applies_to: [refund]
+    message: Refunds above ₹5,000 require human approval.
+default_outcome_from_fact: requested_remedy   # refund or replace
+non_returnable_categories: [innerwear]
