@@ -1,0 +1,6 @@
+.env
+data/
+runs/
+companies/steel/inbox/
+__pycache__/
+*.pyc

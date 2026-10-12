@@ -1,0 +1,13 @@
+# Version ranges cover the two tested environments:
+#   Windows laptop, Python 3.14.7 (live Gemini runs): starlette 1.7.0, uvicorn 0.54.0, playwright 1.63.0
+#   Linux, Python 3.13 (offline tests):              starlette 1.6.0, uvicorn 0.53.0, playwright 1.56.0
+# Both: jinja2 3.1.6, python-multipart 0.0.32, pyyaml 6.0.3, pdfplumber 0.11.10, reportlab 5.0.1
+starlette>=1.6,<1.8
+uvicorn>=0.53,<0.55
+jinja2==3.1.6
+python-multipart==0.0.32
+pyyaml==6.0.3
+pdfplumber==0.11.10
+reportlab==5.0.1
+playwright>=1.56,<1.64
+tzdata>=2024.1        # Pacific-time quota windows on Windows
