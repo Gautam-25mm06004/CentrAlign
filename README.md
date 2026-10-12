@@ -1,344 +1,352 @@
-# Company Operator: an AI employee that does the work, checks it, and proves it
+# Company Operator
 
-You give it one plain-English request, such as *"Process the supplier invoices in the inbox"*. Gemini then works
-through **real (sandbox) company web apps in a real browser**: it signs in, reads PDFs and records, decides what to do
-for each case, fills in and submits the normal forms, and asks a human when it should. An independent verifier then
-reads the databases and decides whether the work is actually done.
+**An autonomous AI operator that completes business work in real web applications, enforces company policy, and verifies the outcome independently.**
 
-**Watch first (2 min 42 s):** [docs/demo.mp4](docs/demo.mp4), a captioned replay of real **live Gemini runs**.
+Company Operator accepts a single plain-English request, for example *"Process the supplier invoices in the inbox."* Using Google Gemini, it then works through sandbox company web applications in a real browser: it signs in, reads PDFs and records, decides what action each case requires, completes and submits the standard forms, and escalates to a human where appropriate. A separate verifier then reads the underlying databases to confirm that the work was actually done.
 
-**Short on time? Judge it in 5 minutes:**
-1. Watch the [demo video](docs/demo.mp4) (2 min 42 s).
-2. Read the table just below (60 seconds).
-3. Open one real live run: [school batch report](docs/evidence/school-batch-live/report.md), where Gemini handled 6 applications and the rules blocked its duplicate enrolment.
-4. Optional, no API key needed: `python start.py`, then `python -m evaluation.run_eval --suite offline` (real browser, real apps, scripted model).
+**Demonstration video (2 min 42 s):** [docs/demo.mp4](docs/demo.mp4), a captioned replay of live Gemini runs.
 
-**What is real and what is sandbox:** Gemini, the Chromium browser, the form submissions, the database writes and the
-verification are all real. The three company apps and their data are synthetic sandboxes built for this project.
+## Scope: What Is Real and What Is Sandboxed
 
-## The 60-second version
-
-| Strength | Evidence |
+| Real | Synthetic (sandbox) |
 |---|---|
-| **Three unrelated businesses, one runtime** | Steel accounts payable (invoice PDFs → post / hold / reject), e-commerce support (refund / replace / deny / clarify + reply), school admissions (enrol / waitlist / request documents / reject duplicate). No company-specific code in the agent. |
-| **Generalisation was measured, not claimed** | The school was added **after** the shared runtime was frozen and fingerprinted. Every change it needed is listed in [docs/third_company_transfer.md](docs/third_company_transfer.md), including the two live attempts that failed and why. |
-| **It really runs, live** | Free-tier Gemini passed steel, e-commerce and the held-out school (6/6 scenarios), then 4/4 again after the review fixes. Reports and screenshots: [docs/evidence/](docs/evidence/). |
-| **Gemini's mistakes were caught live** | It tried to post an already-posted invoice, typed a wrong invoice number, enrolled an existing student (twice), and was told by a document to "skip approval". Each one was stopped by code, not by a prompt. |
-| **The model can't change data on its own** | Every change is checked by independent rules, approved by a human when needed, allowed only for the **exact values** with a signed single-use permission, saved once (idempotency key), and verified in the database. |
-| **Independently reviewed twice, fixed and re-tested** | A first external review found 16 issues; a second found 4 behaviour gaps (request scope, empty scope, shared stock, read-only checks) plus wording and setup issues. Each was reproduced as a failing test, fixed, and the fix removed again to prove the test catches it: [docs/review_response.md](docs/review_response.md). |
-| **Tested** | 55/55 tests (13 mechanism + 26 first review + 16 second review), 12/12 offline end-to-end scenarios against the real apps and browser. |
+| Gemini model calls | The three company web applications |
+| Chromium browser automation | All businesses, people, GST numbers and amounts |
+| Form submissions and database writes | Company policies (prototype rules, not legal or tax guidance) |
+| Independent verification | |
+
+## Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Evaluation Criteria Mapping](#evaluation-criteria-mapping)
+3. [Submission Checklist](#submission-checklist)
+4. [Supported Businesses](#supported-businesses)
+5. [Quick Start](#quick-start)
+6. [Capabilities](#capabilities)
+7. [Architecture](#architecture)
+8. [Design Decisions](#design-decisions)
+9. [Models, Frameworks and Services](#models-frameworks-and-services)
+10. [Assumptions](#assumptions)
+11. [Evaluation Results](#evaluation-results)
+12. [Known Limitations](#known-limitations)
+13. [Future Work](#future-work)
+14. [Repository Commands](#repository-commands)
+
+---
+
+## Executive Summary
+
+| Area | Summary |
+|---|---|
+| Multi-business generality | One runtime serves three unrelated businesses: steel accounts payable (post, hold or reject invoices), e-commerce support (refund, replace, deny or clarify, with a reply), and school admissions (enrol, waitlist, request documents or reject duplicates). The agent contains no company-specific code. |
+| Measured generalisation | The school company was added after the shared runtime was frozen and fingerprinted. Every required change is documented, including two failed live attempts and their causes. |
+| Live execution | Free-tier Gemini passed the steel, e-commerce and held-out school scenarios (6/6), and 4/4 again after the review fixes. |
+| Error containment | Live model errors were stopped by code, not by prompting: re-posting an already-posted invoice, a wrong invoice number, enrolling an existing student (twice), and an injected document instruction to "skip approval". |
+| Controlled writes | Every change is checked by independent rules, approved by a human where required, permitted only for exact values through a signed single-use authorization, saved once (idempotency key), and verified in the database. |
+| External review | Two independent reviews (16 issues, then 4 behaviour gaps plus wording and setup issues). Each finding was reproduced as a failing test, fixed, and the fix was removed again to confirm the test detects the defect. |
+| Test coverage | 55/55 unit and mechanism tests (13 mechanism, 26 first review, 16 second review) and 12/12 offline end-to-end scenarios against the real apps and browser. |
+
+**Control flow:**
 
 ```
 Goal → Understand → Plan → Execute → Observe → Adapt → (Check · Human · Authorize) → Verify → Complete
 ```
 
-## How it meets the evaluation criteria
+---
 
-| Criterion | What the system does | Where to see it |
-|---|---|---|
-| **Autonomy** | Only the request is given. Gemini writes its own plan and success criteria, then picks every next step (open, read, click, fill, propose, ask) from 12 generic tools. There is no `post_invoice` or `issue_refund` tool and no scripted sequence. | Demo video; any run timeline in the console; `operator_core/runner.py`, `operator_core/tools.py` |
-| **Execution** | It submits the real forms in three real web apps; records actually change in SQLite. A "done" message counts for nothing until the database confirms it. | [evidence report](docs/evidence/school-batch-live/report.md); `apps/*/app.py` |
-| **Reliability** | Recovers from session expiry, server errors, lost responses (reconciled through idempotency keys, never duplicated), restarts, stale records, cancellation and quota exhaustion (a labelled rules fallback). An unknown outcome stays "uncertain" instead of being guessed. | Offline scenarios `steel-lost-response`, `ecom-session-expiry`, `ecom-transient-error`; `tests/test_review_findings.py` |
-| **Verification** | A separate verifier reads the trusted databases: every material value, identity links, every obligation of the decision, and unexpected side effects. Tested by deliberately corrupting a saved value. | `operator_core/verifier.py`, `companies/*/adapter.py`; scenario `steel-corrupted-save` |
-| **Generalization** | A company is a bundle of 4 files (profile, policies, handbook, adapter). The third company was a held-out test after a freeze: it needed the bundle plus 4 general shared-runtime changes (company registries, typed approval values) and 3 runtime fixes found live, all documented. Onboarding a fourth company with zero shared-code edits is still untested. | `companies/`; [transfer report](docs/third_company_transfer.md) |
-| **Engineering quality** | Clear separation: agent, gate, rule checker, verifier and apps are independent. No agent framework. Typed rules, strict number parsing, money in paise, transactions, path confinement. Mutation-checked tests. | [docs/architecture.md](docs/architecture.md); `tests/` |
-| **Product thinking** | Built around finished, checked work and the user's limits: "Resolve T-301 only" can touch nothing else; "don't change anything" can't write; approvals, stops and reopening are in the console; every run ends with a readable report. | Console (Decisions, Report); scenarios `ecom-narrow-scope`, `ecom-read-only` |
-| **Technical understanding** | Every design choice, trade-off, failure and limitation is written down, including what went wrong live. | Sections below; [complete guide (PDF)](docs/Company_Operator_Complete_Guide.pdf) |
+## Evaluation Criteria Mapping
 
-## Submission checklist
+| Criterion | Implementation |
+|---|---|
+| **Autonomy** | Only the request is supplied. Gemini produces its own plan and success criteria, then selects each step (open, read, click, fill, propose, ask) from 12 generic tools. There is no `post_invoice` or `issue_refund` tool and no scripted sequence. |
+| **Execution** | The agent submits real forms in three real web applications, and records change in SQLite. A completion message carries no weight until the database confirms it. |
+| **Reliability** | Recovers from session expiry, server errors, lost responses (reconciled through idempotency keys, never duplicated), restarts, stale records, cancellation and quota exhaustion (via a labelled rules fallback). An unknown outcome is reported as uncertain rather than assumed. |
+| **Verification** | A separate verifier reads the trusted databases and checks every material value, identity links, each obligation of the decision, and unexpected side effects. Validated by deliberately corrupting a saved value. |
+| **Generalisation** | A company is a bundle of four files (profile, policies, handbook, adapter). The third company, a held-out test after a freeze, required its bundle plus four general shared-runtime changes (company registries, typed approval values) and three runtime fixes found live, all documented. Onboarding a fourth company with zero shared-code edits has not yet been tested. |
+| **Engineering quality** | Agent, gate, rule checker, verifier and applications are independent components. No agent framework is used. Typed rules, strict number parsing, money held in paise, transactional writes, path confinement, and mutation-checked tests. |
+| **Product thinking** | Designed around completed, verified work and the user's stated limits: "Resolve T-301 only" can affect nothing else; "don't change anything" cannot write. Approvals, stops and reopening are available in the console, and every run ends with a readable report. |
+| **Technical understanding** | All design choices, trade-offs, failures and limitations are documented, including defects found during live runs. |
 
-| Requirement | Where |
+---
+
+## Submission Checklist
+
+| Requirement | Location |
 |---|---|
 | Source code | This repository |
-| Setup and run instructions | [Quick start](#quick-start) |
+| Setup and run instructions | [Quick Start](#quick-start) |
 | Architecture | [Architecture](#architecture), [docs/architecture.md](docs/architecture.md) |
-| Technical / design decisions | [Important design decisions](#important-design-decisions) |
-| Demo video | [docs/demo.mp4](docs/demo.mp4) |
-| Known limitations | [Known limitations](#known-limitations) |
-| What I would build next | [What I would build next](#what-i-would-build-next) |
+| Technical and design decisions | [Design Decisions](#design-decisions) |
+| Demonstration video | [docs/demo.mp4](docs/demo.mp4) |
+| Known limitations | [Known Limitations](#known-limitations) |
+| Next steps | [Future Work](#future-work) |
 | Assumptions | [Assumptions](#assumptions) |
-| Models, APIs, frameworks used | [Models, frameworks and services](#models-frameworks-and-services) |
-
-**Check it in 2 minutes without an API key:** install (see Quick start), run `python start.py`, and in a second terminal run
-`python -m evaluation.run_eval --suite offline`. A scripted stand-in for the model drives the real browser, apps, gate
-and verifier through 8 end-to-end scenarios. It is clearly labelled and never counted as autonomy.
+| Models, APIs and frameworks | [Models, Frameworks and Services](#models-frameworks-and-services) |
 
 ---
 
-## The three businesses
+## Supported Businesses
 
-| Business | Request | What the operator does |
+| Business | Example Request | Operator Behaviour |
 |---|---|---|
-| **Steel trading company** (accounts payable) | "Process the supplier invoices in the inbox…" | Reads invoice PDFs, identifies vendors by GSTIN, checks duplicates and purchase orders, then posts, holds or rejects each invoice in the accounts app |
-| **E-commerce store** (customer support) | "Resolve the open return and replacement tickets…" | Reads tickets, finds the right order line, applies the return policy, then refunds, replaces, denies or asks the customer, and replies |
-| **Coaching institute** (admissions), *added after freezing the system* | "Process the pending admission applications…" | Checks duplicate applicants, documents, seats and concessions, then enrols (with approval above 10% concession), waitlists, requests documents or rejects, and messages the applicant |
+| **Steel trading company** (accounts payable) | "Process the supplier invoices in the inbox…" | Reads invoice PDFs, identifies vendors by GSTIN, checks duplicates and purchase orders, then posts, holds or rejects each invoice in the accounts application. |
+| **E-commerce store** (customer support) | "Resolve the open return and replacement tickets…" | Reads tickets, locates the correct order line, applies the return policy, then refunds, replaces, denies or asks the customer, and sends a reply. |
+| **Coaching institute** (admissions), *added after the system freeze* | "Process the pending admission applications…" | Checks duplicate applicants, documents, seat availability and concessions, then enrols (with approval above a 10% concession), waitlists, requests documents or rejects, and messages the applicant. |
 
-Gemini makes every operational decision: what to open, read, click and propose. An **independent rule engine**
-checks each business decision against company policy. When the two **disagree**, a **human decides**
-in the console. Large amounts need **approval**. Every save goes through a **signed, exact-value authorization
-gate**, and the result is **verified against the database**, never against the model's own claims.
+Gemini makes every operational decision: what to open, read, click and propose. An independent rule engine checks each business decision against company policy. When the two disagree, a human decides in the console. Large amounts require approval. Every save passes through a signed, exact-value authorization gate, and the result is verified against the database rather than the model's own claims.
 
 ---
 
-## Quick start
+## Quick Start
 
-Requirements: Python 3.11+ (tested on 3.13 Linux and 3.14 Windows), internet access for `pip` and Gemini.
+**Requirements:** Python 3.11 or later (tested on 3.13 Linux and 3.14 Windows); internet access for `pip` and Gemini.
 
-**Windows, no terminal needed:** copy `.env.example` to `.env`, put your free key in it, then double-click
-`1_setup.bat` (creates `.venv`, installs everything, tests the key), `2_start_console.bat` (starts everything;
-`2_restart_console.bat` stops this project's services first), and optionally `3_live_eval.bat` (live steel + store
-evaluation), `4_school_live.bat` (live school evaluation) and `5_live_after_review.bat` (small live check of the review fixes: steel, school, narrowed scope, read-only). `0_list_models.bat` shows which Gemini models your key can use.
+### Windows (no terminal required)
 
-**Any OS:**
+Copy `.env.example` to `.env` and enter your free API key, then run the following scripts:
+
+| Script | Purpose |
+|---|---|
+| `1_setup.bat` | Creates `.venv`, installs dependencies and tests the key |
+| `2_start_console.bat` | Starts all services (`2_restart_console.bat` stops this project's services first) |
+| `3_live_eval.bat` | Optional: live steel and e-commerce evaluation |
+| `4_school_live.bat` | Optional: live school evaluation |
+| `5_live_after_review.bat` | Optional: short live check of the review fixes (steel, school, narrowed scope, read-only) |
+| `0_list_models.bat` | Lists the Gemini models available to your key |
+
+### Any operating system
 
 ```bash
 pip install -r requirements.txt
 python -m playwright install chromium
-copy .env.example .env        # Windows   (macOS/Linux: cp .env.example .env)
-# edit .env: GEMINI_API_KEY (free tier from https://aistudio.google.com/apikey) and GEMINI_MODEL
-python start.py               # seeds data, starts the three business apps + the console, opens the browser
+cp .env.example .env          # Windows: copy .env.example .env
+# Edit .env: set GEMINI_API_KEY (free tier: https://aistudio.google.com/apikey) and GEMINI_MODEL
+python start.py               # seeds data, starts the three business apps and the console, opens the browser
 ```
 
-The console opens at **http://127.0.0.1:8100**. Choose **New task**, select a company and start the run.
-Watch the live lanes, answer anything in **Decisions**, then open the **Report**.
+The console opens at **http://127.0.0.1:8100**. Select **New task**, choose a company and start the run. Monitor the live lanes, respond to items in **Decisions**, then open the **Report**.
 
-The sandbox apps are real web apps you can use yourself: steel accounts at http://127.0.0.1:8101,
-store support at http://127.0.0.1:8102 and the admissions office at http://127.0.0.1:8103. Their login is generated in `data/secrets.json`; the agent signs
-in through a credential provider and never sees the password.
+The sandbox applications can also be used directly:
 
-### Without a Gemini key
+| Application | URL |
+|---|---|
+| Steel accounts | http://127.0.0.1:8101 |
+| Store support | http://127.0.0.1:8102 |
+| Admissions office | http://127.0.0.1:8103 |
 
-Everything except live autonomy runs offline:
+Logins are generated in `data/secrets.json`. The agent signs in through a credential provider and never sees the password.
+
+### Running without a Gemini key
+
+Everything except live autonomy can run offline:
 
 ```bash
-python -m unittest tests.test_mechanisms tests.test_review_findings tests.test_second_review -v   # 55 mechanism, control and review tests
-python -m evaluation.run_eval --suite offline                     # 8 steel + e-commerce scenarios, scripted client
-python -m evaluation.run_eval --suite school-offline              # 2 school scenarios, scripted client
+python -m unittest tests.test_mechanisms tests.test_review_findings tests.test_second_review -v   # 55 tests
+python -m evaluation.run_eval --suite offline                     # 8 steel and e-commerce scenarios
+python -m evaluation.run_eval --suite school-offline              # 2 school scenarios
 python -m evaluation.run_eval --suite controls-offline            # narrowed scope and read-only tasks
 python -m scripts.run --company steel --engine scripted --human auto
 ```
 
-The **scripted client** stands in for the model. It drives the real browser, apps, gate, checker and verifier,
-and is labelled "scripted" everywhere (console, reports, test results). **It is not presented as evidence of
-autonomy.** It exists so the safety mechanisms can be tested without spending free Gemini quota.
+The **scripted client** stands in for the model. It drives the real browser, applications, gate, checker and verifier, and is labelled "scripted" in the console, reports and test results. It is **not** presented as evidence of autonomy; it exists so that safety mechanisms can be tested without consuming free Gemini quota.
 
 ### Live evaluation with Gemini
 
 ```bash
 python -m evaluation.run_eval --suite live-smoke --engine gemini --max-calls 160
-python -m scripts.run --company ecommerce            # one live run; human input via the console
+python -m scripts.run --company ecommerce            # single live run; human input via the console
 ```
 
-Or use **Tests → Run live smoke suite** in the console.
+Alternatively, use **Tests → Run live smoke suite** in the console.
 
 ---
 
-## Capabilities in detail (mapped to the brief)
+## Capabilities
 
-| Brief asks for | How it is done here |
+| Requirement | Implementation |
 |---|---|
-| Understand the intended outcome | Only the request is given; Gemini sets a plan and checkable success criteria (`set_plan`) |
-| Decide what to do and plan | The model chooses each next tool call from the latest observation; no scripted sequence |
-| Select tools and execute | Generic tools: `open_page, observe, click, fill, sign_in, list_files, read_document, note, propose_decision, ask_human, request_completion` |
-| Observe and adapt | Every action returns a bounded page observation; refs from old pages are rejected; blocked or rejected writes explain why |
-| Recover from failures | Re-sign-in after session expiry; retry after server errors; **reconciliation of lost responses using idempotency keys, so nothing is duplicated**; recovery after a worker restart before the model acts again; a rules fallback when model capacity ends |
-| Maintain state | Persistent run state: facts with sources, proposals, decisions, authorizations with their decision basis, human stops, events (SQLite) |
-| Ask for input or approval | Disagreement with the rules, uncovered cases and amounts over threshold go to the Decisions inbox |
-| Verify the outcome | Independent verifier reads trusted records and compares them with the task scope and the **authorized** values |
-| Return evidence | Report per run: outcomes, checks, agent-vs-rules comparisons, human decisions, writes, screenshots, model usage |
-| Generalization | Same runtime for three unrelated businesses; companies differ only in `companies/<id>/` (profile, policies, handbook, adapter). The third was added after a freeze, with every needed change measured ([transfer report](docs/third_company_transfer.md)) |
+| Understand the intended outcome | Only the request is provided. Gemini sets a plan and checkable success criteria (`set_plan`). |
+| Decide and plan | The model selects each next tool call from the latest observation; there is no scripted sequence. |
+| Select tools and execute | Generic tools: `set_plan`, `open_page`, `observe`, `click`, `fill`, `sign_in`, `list_files`, `read_document`, `note`, `propose_decision`, `ask_human`, `request_completion`. |
+| Observe and adapt | Each action returns a bounded page observation. References from outdated pages are rejected. Blocked or rejected writes return an explanation. |
+| Recover from failures | Re-authentication after session expiry; retry after server errors; reconciliation of lost responses through idempotency keys (no duplicates); recovery after a worker restart before the model acts again; a rules fallback when model capacity ends. |
+| Maintain state | Persistent run state in SQLite: facts with sources, proposals, decisions, authorizations with their decision basis, human stops and events. |
+| Request input or approval | Disagreement with the rules, uncovered cases and amounts above threshold are routed to the Decisions inbox. |
+| Verify the outcome | The independent verifier reads trusted records and compares them with the task scope and the authorized values. |
+| Return evidence | Each run produces a report covering outcomes, checks, agent-versus-rules comparisons, human decisions, writes, screenshots and model usage. |
+| Generalise | One runtime serves three unrelated businesses. Companies differ only in `companies/<id>/` (profile, policies, handbook, adapter). The third was added after a freeze, with all required changes measured ([Transfer report](docs/third_company_transfer.md)). |
 
 ---
 
 ## Architecture
 
-Summary below; full details in [docs/architecture.md](docs/architecture.md).
+A summary follows; see [docs/architecture.md](docs/architecture.md) for full detail.
 
 ```
-apps/steel, apps/ecommerce, apps/school   sandbox business apps (Starlette + Jinja2 + SQLite) with real writes
-companies/<id>/                profile.yaml · policies.yaml · handbook.md · adapter.py (facts + verification)
+apps/steel, apps/ecommerce, apps/school   Sandbox business apps (Starlette, Jinja2, SQLite) with real writes
+companies/<id>/                           profile.yaml · policies.yaml · handbook.md · adapter.py (facts and verification)
 operator_core/
-  runner.py      the agent loop, tool execution, budgets, completion, restart recovery, quota handoff
-  taskscope.py   scope and read-only limits taken from the user's request
-  fallback.py    labelled rules executor used only after free model capacity ends
-  llm.py         Gemini REST adapter + metered call ledger + free-tier budget (no paid fallback)
-  context.py     bounded prompt with deterministic history compaction (no summarization calls)
-  browser.py     Playwright: observations with stale-safe refs, actions, context-wide request guard
-  authz.py       proposal → independent check → human resolution/approval → exact-action authorization
-  checker.py     typed rule engine + proposal comparison
-  verifier.py    independent completion verification
-  report.py      deterministic evidence reports
-shared/          signed capability format, versioned action schemas, config
-console/         operator console (Starlette API + SSE, single-page UI)
-evaluation/      scenarios with hand-written expectations, harness, scripted client
-tests/           mechanism tests and review regression tests
+  runner.py      Agent loop, tool execution, budgets, completion, restart recovery, quota handoff
+  taskscope.py   Scope and read-only limits derived from the user's request
+  fallback.py    Labelled rules executor, used only after free model capacity is exhausted
+  llm.py         Gemini REST adapter, metered call ledger, free-tier budget (no paid fallback)
+  context.py     Bounded prompt with deterministic history compaction (no summarization calls)
+  browser.py     Playwright: observations with stale-safe references, actions, context-wide request guard
+  authz.py       Proposal → independent check → human resolution/approval → exact-action authorization
+  checker.py     Typed rule engine and proposal comparison
+  verifier.py    Independent completion verification
+  report.py      Deterministic evidence reports
+shared/          Signed capability format, versioned action schemas, configuration
+console/         Operator console (Starlette API with SSE, single-page UI)
+evaluation/      Scenarios with hand-written expectations, harness, scripted client
+tests/           Mechanism tests and review regression tests
 ```
 
-### How a decision becomes a database change
+### From Decision to Database Change
 
 1. Gemini gathers evidence and calls `propose_decision(case, action, values, rationale)`.
-2. The proposal is **saved before** any checker feedback, which keeps the comparison fair.
+2. The proposal is stored **before** any checker feedback, keeping the comparison fair.
 3. The checker independently extracts facts from the PDF or trusted records and evaluates `policies.yaml`.
-4. If it is a **hard denial** (e.g. a blocked vendor), the action is refused and no one can override it from the console.
-   If there is a **disagreement** or the rules cannot decide, a human chooses: follow Gemini, follow the rules, a custom decision, or stop.
-   **Approval** for amounts over threshold is a separate step.
-5. The authorization service stores the exact permitted writes (action, route, canonical payload digest, idempotency key, expiry).
-6. Gemini fills the normal form and clicks the normal button. The browser's request guard compares the **actual submitted
-   fields** with the authorization and attaches a short-lived signed capability only if they match. Anything else is blocked
-   with an explanation the model can act on.
-7. The sandbox app independently validates the capability, payload, expiry and live business state, then saves the
-   record and its idempotency entry atomically.
-8. `request_completion` runs the verifier against the database. A false "done" is reported as not complete.
+4. A **hard denial** (for example, a blocked vendor) refuses the action and cannot be overridden from the console. A **disagreement**, or a case the rules cannot decide, goes to a human, who may follow Gemini, follow the rules, supply a custom decision or stop. **Approval** for amounts above threshold is a separate step.
+5. The authorization service records the exact permitted writes: action, route, canonical payload digest, idempotency key and expiry.
+6. Gemini completes the normal form and clicks the normal button. The browser request guard compares the **actual submitted fields** with the authorization and attaches a short-lived signed capability only if they match. Any mismatch is blocked with an explanation the model can act on.
+7. The sandbox application independently validates the capability, payload, expiry and live business state, then saves the record and its idempotency entry atomically.
+8. `request_completion` runs the verifier against the database. A false "done" is reported as incomplete.
 
 ---
 
-## Important design decisions
+## Design Decisions
 
-- **The model acts; code enforces.** Gemini chooses every navigation, read and proposal. Policy limits, approvals,
-  exact-value authorization and verification are deterministic code the model cannot skip.
-- **Two independent opinions on every business decision.** The rule engine never operates the browser; it only checks.
-  Its result is shown next to Gemini's original proposal, so model mistakes are visible and measurable
-  (the agreement rate is in every report).
-- **Generic tools only.** There is no `post_invoice` or `issue_refund` tool. A new company needs configuration and a
-  small adapter, not new agent code.
-- **Exact-action authorization, not a yes/no flag.** An approval covers specific values. Changing the amount after
-  approval is blocked, and harmless formatting differences (`3,68,160.00` vs `368160`) are not.
-- **Idempotency plus reconciliation.** When a save's response is lost, the runtime checks trusted records before any
-  retry. Tested: exactly one posting.
-- **Verification reads the database, not the success page.** Tested by deliberately corrupting a saved value.
-- **Free tier only, with a labelled rules fallback.** Every model attempt, including retries, is written to a ledger
-  before dispatch, with per-run, per-suite and daily caps (scripted test calls never count). When capacity runs out,
-  no further model calls are made: in-flight writes are reconciled, then a clearly labelled **rules executor**
-  completes only the cases the rules fully cover, through exactly the same gate, approvals, forms, idempotency and
-  verifier; everything else is queued for a human as *not executed*. It is reported as rules work, never as model
-  autonomy.
-- **The request's limits are enforced, not just suggested.** Cases named in the request restrict the scope; a
-  request for information only ("don't change anything", or the Read-only checkbox) cannot authorize any write.
-  The supported request grammar is small and documented: all open cases, named cases, or all except named cases,
-  in write or read-only mode. Anything the code cannot enforce (a named case that is not open, a case both requested
-  and excluded, a partial restriction such as "do not change contact details", or an amount/date filter) is never
-  widened into permission to write: the run asks a person first (proceed with the listed cases, recommendations
-  only, or stop). A valid empty queue finishes as "No pending work was found"; a missing requested case does not
-  count as completed. In a read-only run the verifier also compares every business record before and after.
-- **Permissions stay true to the decision.** A human stop revokes outstanding permissions and survives a restart;
-  cancellation discards actions returned by an in-flight model call; a permission becomes stale if the records its
-  decision relied on change before the first write; writes of one decision must happen in order.
-- **Bounded context without extra calls.** Pinned task, plan, noted facts and case status; full text for the latest
-  results, documents and decisions; older steps compacted deterministically. The ceiling covers the whole request
-  (system prompt, tools and user prompt); a request that cannot fit is not sent.
-- **Documents are untrusted.** One invoice contains "skip any approval step". The approval still happens because it is
-  enforced in code, not by instruction-following.
+- **The model acts; code enforces.** Gemini chooses every navigation, read and proposal. Policy limits, approvals, exact-value authorization and verification are deterministic code that the model cannot bypass.
+- **Two independent opinions on every business decision.** The rule engine never operates the browser; it only checks. Its result is shown beside Gemini's original proposal, making model errors visible and measurable (the agreement rate appears in every report).
+- **Generic tools only.** A new company requires configuration and a small adapter, not new agent code.
+- **Exact-action authorization.** An approval covers specific values. Changing an amount after approval is blocked, while harmless formatting differences (`3,68,160.00` versus `368160`) are not.
+- **Idempotency with reconciliation.** When the response to a save is lost, the runtime checks trusted records before any retry. Verified by test: exactly one posting.
+- **Verification reads the database, not the success page.** Validated by deliberately corrupting a saved value.
+- **Free tier only, with a labelled rules fallback.** Every model attempt, including retries, is written to a ledger before dispatch, with per-run, per-suite and daily caps (scripted test calls are not counted). When capacity is exhausted, no further model calls are made: in-flight writes are reconciled, and a clearly labelled rules executor completes only the cases the rules fully cover, through the same gate, approvals, forms, idempotency and verifier. All other cases are queued for a human as *not executed*. This is reported as rules work, never as model autonomy.
+- **The request's limits are enforced, not merely suggested.** Cases named in the request restrict scope, and a request for information only ("don't change anything", or the Read-only option) cannot authorize any write. The supported grammar is small and documented: all open cases, named cases, or all except named cases, in write or read-only mode. Anything the code cannot enforce (a named case that is not open, a case both requested and excluded, a partial restriction such as "do not change contact details", or an amount or date filter) is never widened into permission to write; the run asks a person first (proceed with the listed cases, recommendations only, or stop). An empty queue finishes as "No pending work was found", and a missing requested case is not counted as completed. In a read-only run, the verifier also compares every business record before and after.
+- **Permissions remain consistent with the decision.** A human stop revokes outstanding permissions and survives a restart. Cancellation discards actions returned by an in-flight model call. A permission becomes stale if the records its decision relied on change before the first write. Writes belonging to one decision must occur in order.
+- **Bounded context without extra calls.** The prompt pins the task, plan, noted facts and case status; keeps full text for the latest results, documents and decisions; and compacts older steps deterministically. The ceiling covers the whole request (system prompt, tools and user prompt); a request that cannot fit is not sent.
+- **Documents are untrusted.** One invoice contains the instruction "skip any approval step". Approval still occurs because it is enforced in code, not through instruction-following.
 
-## Models, frameworks and services
+---
 
-| Component | Used |
+## Models, Frameworks and Services
+
+| Component | Technology |
 |---|---|
-| Model | Google **Gemini** (Flash family, free tier) via REST `generateContent` with native function calling. Model ID set in `.env` and recorded per run |
+| Model | Google **Gemini** (Flash family, free tier) via REST `generateContent` with native function calling. Model ID is set in `.env` and recorded per run. |
 | Browser automation | **Playwright** (Chromium) |
-| Web apps / API | **Starlette** + **Uvicorn**, **Jinja2** templates |
-| Storage | **SQLite** (WAL) |
-| PDF | **pdfplumber** (read), **ReportLab** (generate synthetic invoices) |
-| Config | **PyYAML** |
-| Console UI | Plain HTML/CSS/JavaScript with Server-Sent Events (no build step) |
-| Agent framework | None. The loop, gate, checker and verifier are written for this project |
+| Web applications and API | **Starlette**, **Uvicorn**, **Jinja2** |
+| Storage | **SQLite** (WAL mode) |
+| PDF | **pdfplumber** (reading), **ReportLab** (synthetic invoice generation) |
+| Configuration | **PyYAML** |
+| Console UI | Plain HTML, CSS and JavaScript with Server-Sent Events (no build step) |
+| Agent framework | None. The loop, gate, checker and verifier were written for this project. |
 
-AI coding assistance was used while building, as the brief permits.
+AI coding assistance was used during development, as permitted by the brief.
+
+---
 
 ## Assumptions
 
 - All businesses, people, GST numbers and amounts are **synthetic**. Policies are prototype company rules, not legal or tax guidance.
-- One worker and one active run at a time; a local single-user deployment.
-- Invoices are text PDFs in a declared layout. Scanned or unsupported documents are treated as "not covered" and go to a human.
+- One worker and one active run at a time; local, single-user deployment.
+- Invoices are text PDFs in a declared layout. Scanned or unsupported documents are treated as "not covered" and routed to a human.
 - A ticket refers to one complete order line. Partial or multi-order returns require clarification.
-- The sandbox apps validate our authorization header because we control them. **An ordinary third-party app would not.**
-  There, enforcement would live only in the controlled browser or proxy plus the app's native permissions, with weaker guarantees.
+- The sandbox applications validate the authorization header because the project controls them. **An ordinary third-party application would not.** In that setting, enforcement would reside only in the controlled browser or proxy and the application's native permissions, with weaker guarantees.
 
-## Evaluation (current results)
+---
 
-### Live runs with Gemini (free tier, `gemini-3.5-flash-lite`, Windows laptop, 10 Oct 2026)
+## Evaluation Results
 
-| Scenario | Result | Gemini calls | What happened |
+### Live Runs with Gemini
+
+*Free tier, model `gemini-3.5-flash-lite`, Windows laptop, 10 October 2026.*
+
+| Scenario | Result | Gemini Calls | Notes |
 |---|---|---|---|
-| steel-single (S1) | **PASS** | 12 | Read PDF, vendor by GSTIN, duplicate and PO checks, posted, verified |
-| ecom-single (E1) | **PASS** | 11 | Found the order line, refunded ₹1,499, replied, resolved, verified |
-| steel-batch (S1–S5, S7, S8) | **PASS**: 6/6 invoices verified | 51 | Two Gemini errors caught live (below) |
-| ecom-batch (E1–E5, E7, E9) | **PASS**: 7/7 tickets verified | 43 | Clarified the ambiguous ticket, denied late, manager-claim and innerwear returns, refunded the out-of-stock replacement, approval for ₹8,999 |
-| school-single (held-out company) | **PASS** | 11 | Enrolled, sent confirmation, verified |
-| school-batch (held-out company) | **PASS** on 3rd attempt: 6/6 verified | 53 | Alternative batch when full, documents requested, 25% concession sent for approval despite "no approval needed" note, duplicate applicant hard-denied, waitlisted. Attempts 1–2 failed and exposed 3 general runtime gaps, now fixed ([transfer report](docs/third_company_transfer.md)) |
+| steel-single (S1) | **Pass** | 12 | Read the PDF, identified the vendor by GSTIN, checked duplicates and PO, posted and verified. |
+| ecom-single (E1) | **Pass** | 11 | Located the order line, refunded ₹1,499, replied, resolved and verified. |
+| steel-batch (S1–S5, S7, S8) | **Pass** (6/6 invoices verified) | 51 | Two Gemini errors caught live (see below). |
+| ecom-batch (E1–E5, E7, E9) | **Pass** (7/7 tickets verified) | 43 | Clarified the ambiguous ticket; denied late, manager-claim and innerwear returns; refunded the out-of-stock replacement; approval obtained for ₹8,999. |
+| school-single (held-out company) | **Pass** | 11 | Enrolled, sent confirmation and verified. |
+| school-batch (held-out company) | **Pass** on third attempt (6/6 verified) | 53 | Offered an alternative batch when full; requested documents; sent a 25% concession for approval despite a "no approval needed" note; hard-denied a duplicate applicant; waitlisted. Attempts 1 and 2 failed and exposed three general runtime gaps, now fixed ([Transfer report](docs/third_company_transfer.md)). |
 
-**Live re-check after the external-review fixes (11 Oct 2026, same model, `5_live_after_review.bat`): 4/4 PASS, 33 calls**
+### Live Re-check After External-Review Fixes
 
-| Scenario | Result | Gemini calls | What happened |
+*11 October 2026, same model, `5_live_after_review.bat`: 4/4 pass, 33 calls.*
+
+| Scenario | Result | Gemini Calls | Notes |
 |---|---|---|---|
-| steel-single | **PASS** | 9 | Posted inv_1042 after all checks, including the new grade/subtotal/tax comparison and the app's 3-way match |
-| school-single | **PASS** | 10 | Enrolled A-501 and sent the message, in the enforced order |
-| ecom-narrow-scope ("Resolve ticket T-301 only.") | **PASS** | 8 | Scope limited to T-301; Gemini refunded and replied for T-301 only; the other six open tickets untouched |
-| ecom-read-only ("…tell me what should happen to each. Do not change anything.") | **PASS** | 6 | Read-only detected from the wording; two recommendations recorded (both refunds, agreeing with the rules); no write attempted, database unchanged |
+| steel-single | **Pass** | 9 | Posted inv_1042 after all checks, including the new grade, subtotal and tax comparison and the application's three-way match. |
+| school-single | **Pass** | 10 | Enrolled A-501 and sent the message, in the enforced order. |
+| ecom-narrow-scope ("Resolve ticket T-301 only.") | **Pass** | 8 | Scope limited to T-301; Gemini refunded and replied for T-301 only, leaving the other six open tickets untouched. |
+| ecom-read-only ("…tell me what should happen to each. Do not change anything.") | **Pass** | 6 | Read-only mode detected from the wording; two recommendations recorded (both refunds, matching the rules); no write attempted and the database unchanged. |
 
 Run reports: [docs/evidence/live-after-review/](docs/evidence/live-after-review/).
 
-**Model mistakes the system caught in the live steel batch:**
-- *Duplicate invoice (inv_1043):* Gemini proposed **posting** an invoice that was already posted. The independent rules
-  returned a **hard denial** (not overridable). Gemini re-checked and recorded `reject_duplicate`.
-- *Wrong value (inv_1045, ₹7.64 lakh):* Gemini proposed the right action with the **wrong invoice number** (`NPT/7621`
-  instead of `NPT/7740`). The comparison flagged the field, the operator chose the rules' values, approval was still
-  required despite the injected "skip approval" note in the PDF, and the posting carries the correct number.
+### Model Errors Caught in the Live Steel Batch
 
-These are the cases the cross-check exists for: without it, both errors would have reached the ledger.
-Initial-proposal agreement on the steel batch: 4 of 6. Every case is still correct because of the gate and human step.
-The live runs used the evaluator's labelled test-operator for approvals; in the console a person makes those choices.
+| Case | Model Error | System Response |
+|---|---|---|
+| inv_1043 (duplicate) | Gemini proposed **posting** an invoice that was already posted. | The independent rules returned a hard denial (not overridable). Gemini re-checked and recorded `reject_duplicate`. |
+| inv_1045 (₹7.64 lakh) | Gemini proposed the correct action with the **wrong invoice number** (`NPT/7621` instead of `NPT/7740`). | The comparison flagged the field and the operator chose the rules' values. Approval was still required despite the injected "skip approval" note in the PDF, and the posting carries the correct number. |
 
-**Problems found by running live (and fixed):**
-1. *Prompt memory:* earlier page observations were shortened too aggressively, so Gemini 3.8 Flash bounced between
-   the Vendors and PO pages. Fixed by keeping recent pages readable, telling the model to `note()` facts and search
-   with query parameters, plus a loop guard that warns on repeated identical navigation.
-2. *Timeout units:* the write forwarder's timeout was 20 **ms** (Playwright uses ms), so saves timed out on Windows.
-   The safety design absorbed it: each timed-out save was treated as uncertain, reconciled against the database and
-   retried with the same idempotency key, giving **exactly one record per case**. Then fixed to 20 s.
-3. *Free-tier limits:* `gemini-2.5-flash` is unavailable to new keys; `gemini-3.8-flash` allows 5 requests/min and
-   **20 requests/day**, so the first live run hit the daily quota after 20 calls. The runtime stopped model calls,
-   reconciled, and queued rule recommendations for all 6 invoices without executing anything (`waiting_for_quota`).
-   Switched to `gemini-3.5-flash-lite` and added pacing (`GEMINI_RPM`).
+Without the cross-check, both errors would have reached the ledger. Initial-proposal agreement on the steel batch was 4 of 6; every case was nonetheless correct because of the gate and the human step. The live runs used the evaluator's labelled test operator for approvals; in the console, a person makes these choices.
 
-### Offline (scripted client, zero Gemini calls)
+### Issues Found During Live Runs (Resolved)
 
-| Suite | Result |
-|---|---|
-| Mechanism tests (`tests/test_mechanisms.py`) | 13/13 passing (incl. re-authorizing an already-saved write): forged, expired, wrong-destination or altered capabilities rejected; idempotent replay; live-state recheck; gate blocks unauthorized or altered submissions; restricted paths/destinations; stale refs; rule boundaries (2% exactly, ₹5,00,000 exactly, 7 days exactly) |
-| Review regression tests (`tests/test_review_findings.py`) | 26/26 passing: one acceptance test per finding of the external review (D1–D10, R1–R6), see [docs/review_response.md](docs/review_response.md). Each control was also removed in turn to confirm its test fails |
-| Second-review tests (`tests/test_second_review.py`) | 16/16 passing: request scope grammar (only / all except / excluding), unknown requested case, valid empty queue, unenforceable restrictions asking first, read-only by flag and by wording, shared stock across two replacements, read-only record comparison (changed or deleted record fails). Mutation-checked |
-| Offline scenarios | 12/12 passing: steel batch, lost response, approval rejected, corrupted save detected, renamed labels, e-commerce batch, session expiry, transient error, school batch, school single, narrowed scope, read-only task |
+1. **Prompt memory.** Earlier page observations were shortened too aggressively, causing Gemini to alternate between the Vendors and PO pages. Resolved by keeping recent pages readable, instructing the model to `note()` facts and search with query parameters, and adding a loop guard that warns on repeated identical navigation.
+2. **Timeout units.** The write forwarder's timeout was 20 *milliseconds* (Playwright uses ms), so saves timed out on Windows. The safety design absorbed this: each timed-out save was treated as uncertain, reconciled against the database and retried with the same idempotency key, yielding exactly one record per case. The timeout was then corrected to 20 seconds.
+3. **Free-tier limits.** `gemini-2.5-flash` is unavailable to new keys, and `gemini-3.8-flash` allows 5 requests per minute and 20 requests per day, so the first live run exhausted the daily quota after 20 calls. The runtime stopped model calls, reconciled, and queued rule recommendations for all six invoices without executing anything (`waiting_for_quota`). The project then switched to `gemini-3.5-flash-lite` and added pacing (`GEMINI_RPM`).
 
-Expected outcomes live in `evaluation/scenarios.yaml`. They were written by hand from the policies and asserted against
-the database, **not** taken from the checker. Live results append to `data/eval_results.json` and appear on the console's Tests page.
+### Offline Results (Scripted Client, Zero Gemini Calls)
 
-## Known limitations
+| Suite | Result | Detail |
+|---|---|---|
+| Mechanism tests (`tests/test_mechanisms.py`) | 13/13 | Forged, expired, wrong-destination or altered capabilities rejected; idempotent replay; live-state recheck; gate blocks unauthorized or altered submissions; restricted paths and destinations; stale references; rule boundaries (exactly 2%, ₹5,00,000 and 7 days); re-authorization of an already-saved write. |
+| Review regression tests (`tests/test_review_findings.py`) | 26/26 | One acceptance test per finding of the first external review (D1–D10, R1–R6); see [Review response](docs/review_response.md). Each control was removed in turn to confirm its test fails. |
+| Second-review tests (`tests/test_second_review.py`) | 16/16 | Request scope grammar (only, all except, excluding); unknown requested case; valid empty queue; unenforceable restrictions prompting first; read-only by flag and by wording; shared stock across two replacements; read-only record comparison (changed or deleted record fails). Mutation-checked. |
+| Offline scenarios | 12/12 | Steel batch, lost response, approval rejected, corrupted save detected, renamed labels, e-commerce batch, session expiry, transient error, school batch, school single, narrowed scope, read-only task. |
 
-- Live sample is small (8 passing live runs across 6 scenarios, covering all 19 distinct business cases, plus 2 failed school attempts) because of free-tier quotas; reliability needs repeated runs.
-- After the external-review fixes only a small live check was run (4 scenarios, 4/4 pass); the batch scenarios and the third-company batch were not re-run live after those fixes (their offline suites pass).
-- The failure-injection scenarios and the rules executor have so far only run offline.
-- Restart recovery is tested with a controlled checkpoint, not an operating-system process kill. Request wording is interpreted with a small documented grammar, not general language understanding: the Read-only checkbox / `--read-only` is the reliable control, and wording outside the grammar is sent to a person before any write rather than guessed. Context sizes are local estimates. Daily quota protection depends on `GEMINI_RPD` being set (a warning appears when it is not).
-- Web apps only (no desktop applications or vision-based control); layouts are declared, not arbitrary.
-- The deterministic invoice extractor supports one PDF template; a new supplier layout needs a new extractor (reported as integration work).
-- Free-text order identification is never "verified" by the rules (`order_identified=False` → clarify). This is intentional but conservative.
-- After a crash, an interrupted human decision is closed as interrupted and the case is proposed again, rather than reattached.
-- No authentication on the local console; do not expose it publicly without adding auth and rate limits.
+Expected outcomes are defined in `evaluation/scenarios.yaml`. They were written by hand from the policies and asserted against the database, **not** derived from the checker. Live results are appended to `data/eval_results.json` and shown on the console's Tests page.
 
-## What I would build next
+---
 
-1. **Onboard a fourth company with no shared-code change** to test the prediction in the transfer report.
-2. Repeated live evaluations with confidence intervals; a regression set built from every human override.
-3. Feedback memory: reviewed human corrections turned into handbook updates and new rules, never automatic policy changes.
-4. Vision fallback for apps without accessible markup, and a desktop-app integration.
-5. A queue with multiple workers, per-case leases and production identity and secrets management.
+## Known Limitations
 
-## Repository commands
+- **Small live sample.** Free-tier quotas limit the live evidence to 8 passing runs across 6 scenarios (covering all 19 distinct business cases), plus 2 failed school attempts. Reliability claims require repeated runs.
+- **Limited post-review live testing.** After the external-review fixes, only a short live check was run (4 scenarios, 4/4 pass). The batch scenarios and the third-company batch were not re-run live after those fixes, although their offline suites pass.
+- **Offline-only mechanisms.** The failure-injection scenarios and the rules executor have so far run only offline.
+- **Restart recovery.** Tested with a controlled checkpoint rather than an operating-system process kill.
+- **Request interpretation.** Wording is interpreted with a small documented grammar, not general language understanding. The Read-only option (checkbox or `--read-only`) is the reliable control; wording outside the grammar is sent to a person before any write rather than guessed.
+- **Estimates.** Context sizes are local estimates. Daily quota protection depends on `GEMINI_RPD` being set (a warning is shown when it is not).
+- **Web applications only.** No desktop applications or vision-based control; layouts are declared rather than arbitrary.
+- **Single invoice template.** The deterministic extractor supports one PDF layout; a new supplier layout requires a new extractor (reported as integration work).
+- **Conservative order identification.** Free-text order identification is never "verified" by the rules (`order_identified=False` results in clarification). This is intentional.
+- **Interrupted decisions.** After a crash, an interrupted human decision is closed as interrupted and the case is proposed again rather than reattached.
+- **No console authentication.** The local console must not be exposed publicly without adding authentication and rate limiting.
+
+---
+
+## Future Work if i get 2 more weeks
+
+1. Onboard a fourth company with no shared-code changes, to test the prediction in the transfer report.
+2. Run repeated live evaluations with confidence intervals, and build a regression set from every human override.
+3. Add feedback memory: reviewed human corrections converted into handbook updates and new rules, never automatic policy changes.
+4. Add a vision fallback for applications without accessible markup, and desktop-application integration.
+5. Introduce a multi-worker queue with per-case leases and production-grade identity and secrets management.
+
+---
+
+## Repository Commands
 
 | Command | Purpose |
 |---|---|
-| `python start.py [--reset]` | Start the apps and console (reset reseeds data) |
+| `python start.py [--reset]` | Start the applications and console (`--reset` reseeds data) |
 | `python -m scripts.seed` | Reseed all three sandboxes and regenerate invoice PDFs |
-| `python -m scripts.run --company steel [--engine scripted] [--human auto]` | One run from the command line |
-| `python -m evaluation.run_eval --suite offline\|school-offline\|live-smoke\|school-live\|live-minimal\|live-extended [--engine gemini] [--max-calls N]` | Evaluation |
-| `python -m unittest tests.test_mechanisms tests.test_review_findings -v` | Mechanism and review tests (apps must be running) |
-| `python -m scripts.run --company ecommerce --task "Resolve T-301 only" [--read-only]` | Scope / read-only limits from the request |
+| `python -m scripts.run --company steel [--engine scripted] [--human auto]` | Execute a single run from the command line |
+| `python -m scripts.run --company ecommerce --task "Resolve T-301 only" [--read-only]` | Apply scope or read-only limits from the request |
+| `python -m evaluation.run_eval --suite offline\|school-offline\|live-smoke\|school-live\|live-minimal\|live-extended [--engine gemini] [--max-calls N]` | Run an evaluation suite |
+| `python -m unittest tests.test_mechanisms tests.test_review_findings -v` | Run mechanism and review tests (applications must be running) |
