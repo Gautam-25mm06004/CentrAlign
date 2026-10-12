@@ -1,0 +1,47 @@
+version: steel-v1
+# Synthetic prototype policies (not statutory guidance). Evaluated by the typed rule engine:
+# hard restrictions -> eligibility holds -> default outcome -> approvals.
+rules:
+  - id: blocked_vendor
+    when: {fact: vendor_status, op: eq, value: blocked}
+    effect: hard
+    outcome: reject_blocked
+    deny_actions: [post]
+    message: Vendor is blocked; invoices from this vendor must not be posted.
+  - id: duplicate_invoice
+    when: {fact: already_posted, op: is_true}
+    effect: hard
+    outcome: reject_duplicate
+    deny_actions: [post]
+    message: The same supplier invoice (vendor + normalized invoice number) is already posted.
+  - id: po_not_found
+    when: {fact: po_found, op: is_false}
+    effect: hold
+    message: Referenced purchase order not found.
+  - id: po_vendor_mismatch
+    when: {fact: po_belongs_to_vendor, op: is_false}
+    effect: hold
+    message: Purchase order belongs to a different vendor.
+  - id: grade_mismatch
+    when: {fact: grade_matches, op: is_false}
+    effect: hold
+    message: Invoiced grade differs from the purchase order.
+  - id: quantity_tolerance
+    when: {fact: quantity_deviation_pct, op: gt, value: 2}
+    effect: hold
+    message: Invoiced quantity differs from the PO by more than 2%.
+  - id: rate_mismatch
+    when: {fact: rate_matches, op: is_false}
+    effect: hold
+    message: Invoiced rate differs from the PO rate.
+  - id: arithmetic
+    when: {fact: arithmetic_ok, op: is_false}
+    effect: hold
+    message: Invoice arithmetic (qty x rate, 18% GST, total) does not reconcile.
+  - id: amount_approval
+    when: {fact: total_paise, op: gt, value: 50000000}
+    effect: approval
+    applies_to: [post]
+    message: Posting an invoice above ₹5,00,000 requires human approval.
+default_outcome: post
+hold_outcome: hold

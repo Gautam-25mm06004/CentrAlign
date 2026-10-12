@@ -1,0 +1,78 @@
+id: steel
+name: Steel trading company (accounts payable)
+app: steel                 # sandbox app key (origin resolved from shared config)
+port: 8101
+default_task: Process the supplier invoices in the inbox and tell me what was posted, held, rejected or needs approval.
+action_schemas:
+  steel.record_invoice: {source_doc: text, vendor_id: id, invoice_no: text, po_no: id, grade: text, quantity_t: qty3,
+                         rate: money, subtotal: money, tax: money, total: money,
+                         decision: "enum:post,hold,reject_duplicate,reject_blocked"}
+start_path: /
+allowed_paths: ["/", "/vendors", "/purchase-orders", "/invoices", "/invoices/new", "/ledger", "/login", "/logout"]
+blocked_path_prefixes: ["/api/", "/__faults"]
+files:
+  directory: inbox         # relative to this company folder; read-only for the agent
+  formats: [pdf]
+login:
+  path: /login
+  username_field: username
+  password_field: password
+# Every state-changing route the browser may submit, mapped to a versioned action schema.
+protected_routes:
+  - {method: POST, pattern: "^/invoices$", action: steel.record_invoice}
+case_kind: invoice document (file name in the inbox, e.g. inv_1042.pdf)
+# Business actions Gemini may propose; the runtime turns an authorized proposal into exact writes.
+actions:
+  post:
+    description: Post the invoice to the ledger (it matches a valid PO for an active vendor and passes all checks).
+    values: &invoice_values
+      vendor_id: vendor ID from the Vendors page, e.g. V-101
+      invoice_no: supplier invoice number exactly as printed
+      po_no: purchase order number, e.g. PO-4501
+      grade: grade / item description
+      quantity_t: invoiced quantity in metric tonnes
+      rate: invoiced rate in rupees per tonne
+      subtotal: taxable value in rupees
+      tax: GST amount in rupees
+      total: invoice total in rupees
+      reason: short note for the record
+    writes:
+      - {action: steel.record_invoice, method: POST, route: /invoices, form: /invoices/new, fields: &invoice_fields
+          {source_doc: "{case_id}", vendor_id: "{vendor_id}", invoice_no: "{invoice_no}", po_no: "{po_no}",
+           grade: "{grade}", quantity_t: "{quantity_t}", rate: "{rate}", subtotal: "{subtotal}", tax: "{tax}",
+           total: "{total}", decision: post}}
+  hold:
+    description: Hold the invoice for review because it fails a matching rule or information is missing/ambiguous.
+    values: *invoice_values
+    writes:
+      - {action: steel.record_invoice, method: POST, route: /invoices, form: /invoices/new, fields:
+          {source_doc: "{case_id}", vendor_id: "{vendor_id}", invoice_no: "{invoice_no}", po_no: "{po_no}",
+           grade: "{grade}", quantity_t: "{quantity_t}", rate: "{rate}", subtotal: "{subtotal}", tax: "{tax}",
+           total: "{total}", decision: hold}}
+  reject_duplicate:
+    description: Reject because the same supplier invoice was already posted.
+    values: *invoice_values
+    writes:
+      - {action: steel.record_invoice, method: POST, route: /invoices, form: /invoices/new, fields:
+          {source_doc: "{case_id}", vendor_id: "{vendor_id}", invoice_no: "{invoice_no}", po_no: "{po_no}",
+           grade: "{grade}", quantity_t: "{quantity_t}", rate: "{rate}", subtotal: "{subtotal}", tax: "{tax}",
+           total: "{total}", decision: reject_duplicate}}
+  reject_blocked:
+    description: Reject because the vendor is blocked.
+    values: *invoice_values
+    writes:
+      - {action: steel.record_invoice, method: POST, route: /invoices, form: /invoices/new, fields:
+          {source_doc: "{case_id}", vendor_id: "{vendor_id}", invoice_no: "{invoice_no}", po_no: "{po_no}",
+           grade: "{grade}", quantity_t: "{quantity_t}", rate: "{rate}", subtotal: "{subtotal}", tax: "{tax}",
+           total: "{total}", decision: reject_blocked}}
+# Proposal values compared with the independent checker (value name -> type)
+compare_values: {vendor_id: id, invoice_no: text, po_no: id, grade: label, quantity_t: qty3, rate: money,
+                 subtotal: money, tax: money, total: money}
+# Proposal values that feed approval-threshold rules
+approval_value_facts: {total: total_paise}
+# Message/notes templates used only by the deterministic rules executor after model capacity ends
+fallback_text:
+  post: {reason: "Matched PO and vendor checks (rules executor)"}
+  hold: {reason: "Held: fails a matching rule (rules executor)"}
+  reject_duplicate: {reason: "Duplicate of an invoice already posted (rules executor)"}
+  reject_blocked: {reason: "Vendor is blocked (rules executor)"}
