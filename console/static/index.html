@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<nav class="rail" aria-label="Main">
+  <a class="mark" href="#/">Operator<br><span>console</span></a>
+  <a href="#/" data-nav="home">Companies</a>
+  <a href="#/new" data-nav="new">New task</a>
+  <a href="#/runs" data-nav="runs">Runs</a>
+  <a href="#/decisions" data-nav="decisions">Decisions <b id="pending-count" hidden></b></a>
+  <a href="#/tests" data-nav="tests">Tests</a>
+  <div class="rail-foot" id="engine-status"></div>
+</nav>
+<main id="view" tabindex="-1"></main>
+<script src="/static/app.js"></script>
+</body>
+</html>
