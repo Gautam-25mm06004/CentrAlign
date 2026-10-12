@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}{{ c.name }}{% endblock %}{% block body %}
+<h1>{{ c.name }} ({{ c.id }})</h1><p class="muted">{{ c.email }}</p>
+<div class="panel"><table><thead><tr><th>Line</th><th>Order</th><th>Product</th><th>Category</th><th>Delivered</th><th class="num">Paid</th><th class="num">Refunded</th></tr></thead><tbody>
+{% for l in lines %}<tr><td>{{ l.id }}</td><td><a href="/orders/{{ l.order_id }}">{{ l.order_id }}</a></td><td>{{ l.product_name }} × {{ l.qty }}</td><td>{{ l.category }}</td><td>{{ l.delivered_at|ist }}</td><td class="num">{{ l.paid_amount|inr }}</td><td class="num">{{ l.refunded|inr }}</td></tr>{% endfor %}
+</tbody></table></div>{% endblock %}

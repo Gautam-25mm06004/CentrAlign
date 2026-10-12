@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{% block title %}Support{% endblock %} · Store Support Desk</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,"Helvetica Neue",Arial,sans-serif;background:#faf7ff;color:#22163a;font-size:14px;display:flex;min-height:100vh}
+aside{width:210px;background:#2d1b52;color:#e9defc;padding:20px 14px;flex-shrink:0}
+aside .brand{font-weight:700;font-size:16px;margin-bottom:24px}
+aside a{display:block;color:#d8c8f5;text-decoration:none;padding:8px 10px;border-radius:6px;margin-bottom:2px}
+aside a:hover{background:#43297a;color:#fff}
+aside .who{margin-top:30px;font-size:12px;color:#a995cf}aside .who a{display:inline;padding:0}
+main{flex:1;padding:28px 34px;max-width:1100px}
+h1{font-size:22px;margin:0 0 18px}h2{font-size:16px;margin:22px 0 10px}
+.panel{background:#fff;border:1px solid #e7dff5;border-radius:10px;padding:18px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1px solid #eee6f8;text-align:left}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:#6b5a8e}
+.pill{border-radius:999px;padding:2px 9px;font-size:12px;background:#efe7ff;color:#4c2a91}
+.pill.resolved{background:#dcfce7;color:#14532d}.pill.closed_denied{background:#fee2e2;color:#7f1d1d}.pill.waiting_on_customer{background:#fef9c3;color:#713f12}.pill.escalated{background:#ffedd5;color:#7c2d12}
+.msg{border-left:3px solid #8b5cf6;padding:8px 12px;margin:8px 0;background:#fbf9ff}
+.msg.agent{border-color:#14b8a6;background:#f2fdfb}
+.msg small{color:#7a6b98}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.actions form{background:#fff;border:1px solid #e7dff5;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.actions h3{margin:0 0 6px;font-size:14px}
+input,select,textarea{padding:7px;border:1px solid #cfc2ea;border-radius:6px;font:inherit}
+button{margin-top:6px;background:#6d28d9;color:#fff;border:0;border-radius:6px;padding:8px 12px;font:inherit;cursor:pointer}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.muted{color:#7a6b98}
+</style></head><body>
+<aside><div class="brand">🛍 Store Support Desk</div>
+<a href="/tickets">Open tickets</a><a href="/tickets?status=all">All tickets</a><a href="/products">Products &amp; stock</a>
+<div class="who">Signed in as {{ user }}<br><a href="/logout">Sign out</a></div></aside>
+<main>{% block body %}{% endblock %}</main></body></html>

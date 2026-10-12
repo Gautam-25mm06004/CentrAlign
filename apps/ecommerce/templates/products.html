@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Products{% endblock %}{% block body %}
+<h1>Products &amp; stock</h1><div class="panel"><table><thead><tr><th>ID</th><th>Product</th><th>Category</th><th class="num">Price</th><th class="num">Stock</th></tr></thead><tbody>
+{% for p in rows %}<tr><td>{{ p.id }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td><td class="num">{{ p.price|inr }}</td><td class="num">{{ p.stock }}</td></tr>{% endfor %}
+</tbody></table></div>{% endblock %}

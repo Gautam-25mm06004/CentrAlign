@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}Tickets{% endblock %}{% block body %}
+<h1>{{ 'Open tickets' if status=='open' else 'All tickets' }}</h1>
+<div class="panel"><table><thead><tr><th>Ticket</th><th>Customer</th><th>Subject</th><th>Request</th><th>Received</th><th>Status</th></tr></thead><tbody>
+{% for r in rows %}<tr><td><a href="/tickets/{{ r.id }}">{{ r.id }}</a></td><td>{{ r.customer_name }}</td><td>{{ r.subject }}</td><td>{{ r.request_type }}</td><td>{{ r.created_at|ist }}</td><td><span class="pill {{ r.status }}">{{ r.status }}</span></td></tr>
+{% else %}<tr><td colspan="6" class="muted">No tickets.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}

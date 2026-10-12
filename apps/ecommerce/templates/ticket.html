@@ -1,0 +1,35 @@
+{% extends "base.html" %}{% block title %}{{ t.id }}{% endblock %}{% block body %}
+<h1>{{ t.id }} · {{ t.subject }}</h1>
+<div class="panel">
+<p><strong>Customer:</strong> <a href="/customers/{{ t.customer_id }}">{{ t.customer_name }} ({{ t.customer_id }})</a> ·
+<strong>{{ 'Customer request' if not alt else 'Requested remedy' }}:</strong> {{ t.request_type }} ·
+<strong>Received:</strong> {{ t.created_at|ist }} · <strong>Status:</strong> <span class="pill {{ t.status }}">{{ t.status }}</span>
+{% if t.linked_order_id %} · <strong>Order referenced:</strong> <a href="/orders/{{ t.linked_order_id }}">{{ t.linked_order_id }}</a>{% endif %}</p>
+<h2>Conversation</h2>
+{% for m in msgs %}<div class="msg"><small>{{ m.sender }} · {{ m.at|ist }}</small><div>{{ m.body }}</div></div>{% endfor %}
+{% for r in replies %}<div class="msg agent"><small>Support reply · {{ r.at|ist }} · status → {{ r.new_status }}</small><div>{{ r.body }}</div></div>{% endfor %}
+{% if refunds %}<p><strong>Refunds on this ticket:</strong> {% for r in refunds %}RF-{{ '%05d' % r.id }} {{ r.amount|inr }} (line {{ r.order_line_id }}) {% endfor %}</p>{% endif %}
+</div>
+<h2>Customer's order lines</h2>
+<div class="panel"><table><thead><tr><th>Line</th><th>Order</th><th>Product</th><th>Category</th><th>Delivered</th><th class="num">Paid</th><th class="num">Refunded</th><th class="num">Stock now</th></tr></thead><tbody>
+{% for l in lines %}<tr><td>{{ l.id }}</td><td><a href="/orders/{{ l.order_id }}">{{ l.order_id }}</a></td><td>{{ l.product_name }} × {{ l.qty }}</td><td>{{ l.category }}</td><td>{{ l.delivered_at|ist }}</td><td class="num">{{ l.paid_amount|inr }}</td><td class="num">{{ l.refunded|inr }}</td><td class="num">{{ l.stock }}</td></tr>{% endfor %}
+</tbody></table></div>
+<h2>Actions</h2>
+<div class="actions">
+<form method="post" action="/tickets/{{ t.id }}/refund"><h3>Issue refund</h3>
+<input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="ticket_id" value="{{ t.id }}">
+<label for="rf_line">Order line</label><select id="rf_line" name="order_line_id"><option value="">— select line —</option>{% for l in lines %}<option value="{{ l.id }}">{{ l.id }} · {{ l.product_name }}</option>{% endfor %}</select>
+<label for="rf_amount">{{ 'Refund amount (₹)' if not alt else 'Amount to return (₹)' }}</label><input id="rf_amount" name="amount">
+<button type="submit">Issue refund</button></form>
+<form method="post" action="/tickets/{{ t.id }}/replacement"><h3>Send replacement</h3>
+<input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="ticket_id" value="{{ t.id }}">
+<label for="rp_line">Order line</label><select id="rp_line" name="order_line_id"><option value="">— select line —</option>{% for l in lines %}<option value="{{ l.id }}">{{ l.id }} · {{ l.product_name }}</option>{% endfor %}</select>
+<label for="rp_qty">Quantity</label><input id="rp_qty" name="quantity" value="1">
+<button type="submit">Send replacement</button></form>
+<form method="post" action="/tickets/{{ t.id }}/reply"><h3>Reply to customer</h3>
+<input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="ticket_id" value="{{ t.id }}">
+<label for="ry_body">Message</label><textarea id="ry_body" name="body" rows="4"></textarea>
+<label for="ry_status">Set ticket status</label><select id="ry_status" name="new_status"><option value="">— select —</option>
+<option value="resolved">Resolved</option><option value="waiting_on_customer">Waiting on customer</option><option value="escalated">Escalated</option><option value="closed_denied">Closed — request denied</option></select>
+<button type="submit">Send reply</button></form>
+</div>{% endblock %}
